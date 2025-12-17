@@ -1,0 +1,32 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # Architecture / imports
+    always_use_package_imports: true
+    avoid_relative_lib_imports: true
+    depend_on_referenced_packages: true
+
+    # Async / lifecycle
+    unawaited_futures: true
+    await_only_futures: true
+    use_build_context_synchronously: true
+    discarded_futures: true
+
+    # Safety
+    avoid_dynamic_calls: true
+    cancel_subscriptions: true
+    close_sinks: true
+
+    # Performance
+    prefer_const_constructors: true
+    prefer_final_locals: true
+
+    # Clean code
+    avoid_empty_else: true
+    curly_braces_in_flow_control_structures: true

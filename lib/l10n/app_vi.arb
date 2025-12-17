@@ -1,0 +1,26 @@
+{
+  "@@locale": "vi",
+  "appName": "Base Flutter",
+  "welcome": "Chào mừng",
+  "home": "Trang chủ",
+  "splash": "Màn hình khởi động",
+  "counter": "Bộ đếm",
+  "incrementCounter": "Tăng bộ đếm",
+  "themeMode": "Chế độ giao diện",
+  "switchToLightMode": "Chuyển sang chế độ sáng",
+  "switchToDarkMode": "Chuyển sang chế độ tối",
+  "current": "Hiện tại",
+  "toggleTheme": "Chuyển đổi giao diện",
+  "language": "Ngôn ngữ",
+  "english": "Tiếng Anh",
+  "vietnamese": "Tiếng Việt",
+  "setting": "Cài đặt",
+  "notification": "Thông báo",
+  "darkMode": "Chế độ tối",
+  "lightMode": "Chế độ sáng",
+  "appInfo": "Thông tin ứng dụng",
+  "appVersion": "Phiên bản 1.0.0",
+  "noNotifications": "Không có thông báo",
+  "clearAll": "Xóa tất cả"
+}
+

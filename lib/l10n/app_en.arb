@@ -1,0 +1,92 @@
+{
+  "@@locale": "en",
+  "appName": "Base Flutter",
+  "@appName": {
+    "description": "The application name"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home page title"
+  },
+  "splash": "Splash",
+  "@splash": {
+    "description": "Splash screen"
+  },
+  "counter": "Counter",
+  "@counter": {
+    "description": "Counter label"
+  },
+  "incrementCounter": "Increment Counter",
+  "@incrementCounter": {
+    "description": "Increment counter button"
+  },
+  "themeMode": "Theme Mode",
+  "@themeMode": {
+    "description": "Theme mode label"
+  },
+  "switchToLightMode": "Switch to Light Mode",
+  "@switchToLightMode": {
+    "description": "Switch to light mode button"
+  },
+  "switchToDarkMode": "Switch to Dark Mode",
+  "@switchToDarkMode": {
+    "description": "Switch to dark mode button"
+  },
+  "current": "Current",
+  "@current": {
+    "description": "Current label"
+  },
+  "toggleTheme": "Toggle Theme",
+  "@toggleTheme": {
+    "description": "Toggle theme tooltip"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language"
+  },
+  "vietnamese": "Vietnamese",
+  "@vietnamese": {
+    "description": "Vietnamese language"
+  },
+  "setting": "Settings",
+  "@setting": {
+    "description": "Settings page title"
+  },
+  "notification": "Notifications",
+  "@notification": {
+    "description": "Notifications page title"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode label"
+  },
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Light mode label"
+  },
+  "appInfo": "App Information",
+  "@appInfo": {
+    "description": "App information section"
+  },
+  "appVersion": "Version 1.0.0",
+  "@appVersion": {
+    "description": "App version"
+  },
+  "noNotifications": "No notifications",
+  "@noNotifications": {
+    "description": "No notifications message"
+  },
+  "clearAll": "Clear All",
+  "@clearAll": {
+    "description": "Clear all notifications button"
+  }
+}
+
