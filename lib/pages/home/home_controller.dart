@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 
-import 'package:base_flutter/core/base/base_controller.dart';
-import 'package:base_flutter/core/utils/logger.dart';
-import 'package:base_flutter/data/models/post_model.dart';
-import 'package:base_flutter/data/repositories/post_repository.dart';
-import 'package:base_flutter/services/locale_service.dart';
-import 'package:base_flutter/services/theme_service.dart';
-import 'package:base_flutter/services/ui_service.dart';
+import '../../core/base/base_controller.dart';
+import '../../core/utils/logger.dart';
+import '../../data/models/post_model.dart';
+import '../../data/repositories/post_repository.dart';
+import '../../services/locale_service.dart';
+import '../../services/theme_service.dart';
+import '../../services/ui_service.dart';
 
 class HomeController extends BaseController {
   final counter = 0.obs;

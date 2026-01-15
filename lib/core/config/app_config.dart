@@ -1,4 +1,4 @@
-import 'package:base_flutter/core/config/env_service.dart';
+import 'env_service.dart';
 
 class AppConfig {
   static String get baseUrl => EnvService.getApiBaseUrl();

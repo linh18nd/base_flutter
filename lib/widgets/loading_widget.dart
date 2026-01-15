@@ -1,7 +1,7 @@
-import 'package:base_flutter/services/theme_service.dart';
+import '../services/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:base_flutter/core/config/app_theme.dart';
+import '../core/config/app_theme.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;

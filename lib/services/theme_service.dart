@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:base_flutter/core/storage/storage_service.dart';
-import 'package:base_flutter/core/config/app_config.dart';
+import '../core/storage/storage_service.dart';
+import '../core/config/app_config.dart';
 
 class ThemeService extends GetxService {
   StorageService get _storageService => Get.find<StorageService>();

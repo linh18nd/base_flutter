@@ -21,5 +21,3 @@ Map<String, dynamic> _$BaseModelToJson(BaseModel instance) => <String, dynamic>{
   'createdAt': instance.createdAt?.toIso8601String(),
   'updatedAt': instance.updatedAt?.toIso8601String(),
 };
-
-

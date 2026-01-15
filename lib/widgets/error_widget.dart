@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:base_flutter/core/config/app_theme.dart';
+import '../core/config/app_theme.dart';
 
 class ErrorWidget extends StatelessWidget {
   final String message;

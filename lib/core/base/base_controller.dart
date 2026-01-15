@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-import 'package:base_flutter/core/utils/logger.dart';
-import 'package:base_flutter/services/ui_service.dart';
+import '../utils/logger.dart';
+import '../../services/ui_service.dart';
 
 class BaseController extends GetxController {
   final isLoading = false.obs;
@@ -33,7 +33,9 @@ class BaseController extends GetxController {
       Logger.d('Hiding loading overlay due to error', runtimeType.toString());
       _ui.showError(msg);
 
-      if (rethrowError) {}
+      if (rethrowError) {
+        rethrow;
+      }
       return null;
     } finally {
       isLoading.value = false;

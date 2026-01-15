@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:base_flutter/pages/main_navigation/main_navigation_binding.dart';
-import 'package:base_flutter/pages/main_navigation/main_navigation_page.dart';
-import 'package:base_flutter/pages/splash/splash_binding.dart';
-import 'package:base_flutter/pages/splash/splash_page.dart';
+import '../pages/main_navigation/main_navigation_binding.dart';
+import '../pages/main_navigation/main_navigation_page.dart';
+import '../pages/splash/splash_binding.dart';
+import '../pages/splash/splash_page.dart';
 
 class AppPages {
   AppPages._();

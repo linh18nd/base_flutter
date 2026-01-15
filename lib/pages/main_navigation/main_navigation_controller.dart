@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:base_flutter/core/base/base_controller.dart';
+import '../../core/base/base_controller.dart';
 
 class MainNavigationController extends BaseController {
   final currentIndex = 0.obs;

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:base_flutter/core/network/api_client.dart';
-import 'package:base_flutter/core/network/api_response.dart';
+import 'api_client.dart';
+import 'api_response.dart';
 
 abstract class ApiService {
   final ApiClient apiClient;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:base_flutter/pages/notification/notification_controller.dart';
-import 'package:base_flutter/data/models/notification_model.dart';
-import 'package:base_flutter/core/utils/localization_extensions.dart';
-import 'package:base_flutter/core/config/app_theme.dart';
+import 'notification_controller.dart';
+import '../../data/models/notification_model.dart';
+import '../../core/utils/localization_extensions.dart';
+import '../../core/config/app_theme.dart';
 
 class NotificationPage extends GetView<NotificationController> {
   const NotificationPage({super.key});

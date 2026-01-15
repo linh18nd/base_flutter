@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:base_flutter/pages/setting/setting_controller.dart';
+import 'setting_controller.dart';
 
 class SettingBinding extends Bindings {
   @override
@@ -7,6 +7,7 @@ class SettingBinding extends Bindings {
     Get.lazyPut<SettingController>(() => SettingController());
   }
 }
+
 
 
 

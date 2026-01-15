@@ -1,9 +1,9 @@
-import 'package:base_flutter/core/constants/api_constants.dart';
+import '../../core/constants/api_constants.dart';
 import 'package:dio/dio.dart';
 
-import 'package:base_flutter/core/network/api_response.dart';
-import 'package:base_flutter/core/network/api_service.dart';
-import 'package:base_flutter/data/models/post_model.dart';
+import '../../core/network/api_response.dart';
+import '../../core/network/api_service.dart';
+import '../models/post_model.dart';
 
 class PostRepository extends ApiService {
   PostRepository(super.apiClient);

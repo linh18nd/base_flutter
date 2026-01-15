@@ -39,7 +39,7 @@ dependencies:
   get: ^4.6.6
   dio: ^5.4.0
   shared_preferences: ^2.2.2
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   equatable: ^2.0.5
   flex_color_scheme: ^8.4.0
   flutter_screenutil: ^5.9.3

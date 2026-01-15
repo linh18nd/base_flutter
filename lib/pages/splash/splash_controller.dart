@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/widgets.dart';
-import 'package:base_flutter/core/base/base_controller.dart';
-import 'package:base_flutter/routes/app_pages.dart';
+import '../../core/base/base_controller.dart';
+import '../../routes/app_pages.dart';
 
 class SplashController extends BaseController {
   @override

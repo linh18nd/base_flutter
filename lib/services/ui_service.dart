@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:base_flutter/core/utils/logger.dart';
-import 'package:base_flutter/widgets/loading_widget.dart';
+import '../core/utils/logger.dart';
+import '../widgets/loading_widget.dart';
 
 class UiService extends GetxService {
   final _isLoadingShown = false.obs;

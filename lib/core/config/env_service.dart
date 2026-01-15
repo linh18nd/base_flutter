@@ -1,5 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:base_flutter/core/utils/logger.dart';
+import '../utils/logger.dart';
 
 enum Environment { dev, stag, prod }
 

@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
-import 'package:base_flutter/core/config/app_config.dart';
-import 'package:base_flutter/core/constants/api_constants.dart';
-import 'package:base_flutter/core/storage/storage_service.dart';
+import '../config/app_config.dart';
+import '../constants/api_constants.dart';
+import '../storage/storage_service.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class ApiClient {

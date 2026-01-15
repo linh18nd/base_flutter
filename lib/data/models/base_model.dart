@@ -8,17 +8,10 @@ class BaseModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  BaseModel({
-    this.id,
-    this.createdAt,
-    this.updatedAt,
-  });
+  BaseModel({this.id, this.createdAt, this.updatedAt});
 
   factory BaseModel.fromJson(Map<String, dynamic> json) =>
       _$BaseModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BaseModelToJson(this);
 }
-
-
-

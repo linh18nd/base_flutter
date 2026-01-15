@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:base_flutter/pages/main_navigation/main_navigation_controller.dart';
-import 'package:base_flutter/pages/home/home_page.dart';
-import 'package:base_flutter/pages/setting/setting_page.dart';
-import 'package:base_flutter/pages/notification/notification_page.dart';
-import 'package:base_flutter/pages/notification/notification_controller.dart';
-import 'package:base_flutter/core/utils/localization_extensions.dart';
+import 'main_navigation_controller.dart';
+import '../home/home_page.dart';
+import '../setting/setting_page.dart';
+import '../notification/notification_page.dart';
+import '../notification/notification_controller.dart';
+import '../../core/utils/localization_extensions.dart';
 
 class MainNavigationPage extends GetView<MainNavigationController> {
   const MainNavigationPage({super.key});

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:base_flutter/bindings/initial_binding.dart';
-import 'package:base_flutter/core/config/app_config.dart';
-import 'package:base_flutter/core/config/flavor_config.dart';
-import 'package:base_flutter/routes/app_pages.dart';
-import 'package:base_flutter/services/theme_service.dart';
-import 'package:base_flutter/services/locale_service.dart';
-import 'package:base_flutter/l10n/app_localizations.dart';
+import 'bindings/initial_binding.dart';
+import 'core/config/app_config.dart';
+import 'core/config/flavor_config.dart';
+import 'routes/app_pages.dart';
+import 'services/theme_service.dart';
+import 'services/locale_service.dart';
+import 'l10n/app_localizations.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
