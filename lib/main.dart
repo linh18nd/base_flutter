@@ -1,3 +1,4 @@
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,6 @@ import 'package:base_flutter/core/config/flavor_config.dart';
 import 'package:base_flutter/routes/app_pages.dart';
 import 'package:base_flutter/services/theme_service.dart';
 import 'package:base_flutter/services/locale_service.dart';
-import 'package:base_flutter/l10n/app_localizations.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +16,10 @@ void main(List<String> args) async {
   await FlavorConfig.init(args);
 
   await InitialBinding.init();
+
+  // Initialize slang locale from LocaleService
+  final localeService = Get.find<LocaleService>();
+  await LocaleSettings.setLocaleRaw(localeService.locale.languageCode);
 
   runApp(const MyApp());
 }
@@ -26,33 +30,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeService = Get.find<ThemeService>();
-    final localeService = Get.find<LocaleService>();
 
-    return ScreenUtilInit(
-      designSize: const Size(AppConfig.designWidth, AppConfig.designHeight),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return Obx(
-          () => GetMaterialApp(
-            title: AppConfig.appName,
-            debugShowCheckedModeBanner: false,
-            initialRoute: AppPages.initial,
-            getPages: AppPages.routes,
-            theme: ThemeService.getLightTheme(),
-            darkTheme: ThemeService.getDarkTheme(),
-            themeMode: themeService.themeMode,
-            locale: localeService.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: LocaleService.supportedLocales,
-          ),
-        );
-      },
+    return TranslationProvider(
+      child: ScreenUtilInit(
+        designSize: const Size(AppConfig.designWidth, AppConfig.designHeight),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return Obx(
+            () => GetMaterialApp(
+              title: AppConfig.appName,
+              debugShowCheckedModeBanner: false,
+              initialRoute: AppPages.initial,
+              getPages: AppPages.routes,
+              theme: ThemeService.getLightTheme(),
+              darkTheme: ThemeService.getDarkTheme(),
+              themeMode: themeService.themeMode,
+              locale: TranslationProvider.of(context).flutterLocale,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocaleUtils.supportedLocales,
+            ),
+          );
+        },
+      ),
     );
   }
 }

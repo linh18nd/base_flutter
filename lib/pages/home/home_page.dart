@@ -20,14 +20,14 @@ class HomePage extends GetView<HomeController> {
             children: [
               ElevatedButton(
                 onPressed: controller.loadPosts,
-                child: Text('Load posts', style: AppTextStyle.t16w500()),
+                child: Text(context.l10n.load_posts, style: AppTextStyle.t16w500()),
               ),
               SizedBox(height: 12.h),
               Expanded(
                 child: controller.posts.isEmpty
                     ? Center(
                         child: Text(
-                          'No posts loaded',
+                          context.l10n.no_posts_loaded,
                           style: AppTextStyle.t14w400(AppColors.textSecondary),
                         ),
                       )

@@ -19,7 +19,7 @@ class NotificationPage extends GetView<NotificationController> {
           IconButton(
             icon: const Icon(Icons.clear_all),
             onPressed: controller.clearAllNotifications,
-            tooltip: context.l10n.clearAll,
+            tooltip: context.l10n.clear_all,
           ),
         ],
       ),
@@ -36,7 +36,7 @@ class NotificationPage extends GetView<NotificationController> {
                     ),
                     SizedBox(height: 16.h),
                     Text(
-                      context.l10n.noNotifications,
+                      context.l10n.no_notifications,
                       style: AppTextStyle.t16w400(AppColors.textSecondary),
                     ),
                   ],

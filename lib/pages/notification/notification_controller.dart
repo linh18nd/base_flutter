@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:base_flutter/core/base/base_controller.dart';
 import 'package:base_flutter/data/models/notification_model.dart';
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 
 class NotificationController extends BaseController {
   final notifications = <NotificationModel>[].obs;
@@ -14,14 +15,14 @@ class NotificationController extends BaseController {
   void _loadSampleNotifications() {
     notifications.addAll([
       NotificationModel(
-        title: 'Welcome',
-        message: 'Welcome to Base Flutter App',
+        title: t.welcome,
+        message: t.welcome_message,
         type: NotificationType.info,
         isRead: false,
       ),
       NotificationModel(
-        title: 'Update Available',
-        message: 'A new version of the app is available',
+        title: t.update_available,
+        message: t.update_available_message,
         type: NotificationType.warning,
         isRead: false,
       ),

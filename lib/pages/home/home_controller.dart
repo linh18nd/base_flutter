@@ -1,3 +1,4 @@
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:get/get.dart';
 
 import 'package:base_flutter/core/base/base_controller.dart';
@@ -41,7 +42,7 @@ class HomeController extends BaseController {
           runtimeType.toString(),
         );
       } else {
-        final msg = response.message ?? 'Failed to load posts';
+        final msg = response.message ?? t.failed_to_load_posts;
         errorMessage.value = msg;
         Logger.e(msg, runtimeType.toString(), response.error);
         _uiService.showError(msg);

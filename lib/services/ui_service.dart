@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'package:base_flutter/core/utils/logger.dart';
 import 'package:base_flutter/widgets/loading_widget.dart';
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 
 class UiService extends GetxService {
   final _isLoadingShown = false.obs;
@@ -48,7 +49,7 @@ class UiService extends GetxService {
     Logger.e('Show error snackbar: $message', 'UiService');
 
     Get.snackbar(
-      title ?? 'Error',
+      title ?? t.error,
       message,
       snackPosition: position,
       backgroundColor: Colors.red.shade200,
@@ -69,7 +70,7 @@ class UiService extends GetxService {
     Logger.i('Show info snackbar: $message', 'UiService');
 
     Get.snackbar(
-      title ?? 'Info',
+      title ?? t.info,
       message,
       snackPosition: position,
       backgroundColor: Colors.blue.shade200,

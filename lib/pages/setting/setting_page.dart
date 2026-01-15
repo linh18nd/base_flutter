@@ -26,7 +26,7 @@ class SettingPage extends GetView<SettingController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(context.l10n.themeMode, style: AppTextStyle.t18w700()),
+                  Text(context.l10n.theme_mode, style: AppTextStyle.t18w700()),
                   SizedBox(height: 16.h),
                   Obx(
                     () => ListTile(
@@ -37,8 +37,8 @@ class SettingPage extends GetView<SettingController> {
                       ),
                       title: Text(
                         themeService.themeMode == ThemeMode.dark
-                            ? context.l10n.darkMode
-                            : context.l10n.lightMode,
+                            ? context.l10n.dark_mode
+                            : context.l10n.light_mode,
                       ),
                       trailing: Switch(
                         value: themeService.themeMode == ThemeMode.dark,
@@ -98,12 +98,12 @@ class SettingPage extends GetView<SettingController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(context.l10n.appInfo, style: AppTextStyle.t18w700()),
+                  Text(context.l10n.app_info, style: AppTextStyle.t18w700()),
                   SizedBox(height: 16.h),
                   ListTile(
                     leading: const Icon(Icons.info_outline),
-                    title: Text(context.l10n.appName),
-                    subtitle: Text(context.l10n.appVersion),
+                    title: Text(context.l10n.app_name),
+                    subtitle: Text(context.l10n.app_version),
                   ),
                 ],
               ),

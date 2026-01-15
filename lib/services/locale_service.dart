@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:base_flutter/core/storage/storage_service.dart';
 import 'package:base_flutter/core/config/app_config.dart';
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 
 class LocaleService extends GetxService {
   final StorageService _storageService = Get.find<StorageService>();
@@ -20,14 +21,17 @@ class LocaleService extends GetxService {
       final savedLanguage = _storageService.getString(AppConfig.keyLanguage);
       if (savedLanguage != null) {
         _locale.value = Locale(savedLanguage);
+        await LocaleSettings.setLocaleRaw(savedLanguage);
         await Get.updateLocale(Locale(savedLanguage));
       } else {
         final systemLocale = Get.deviceLocale ?? const Locale('vi');
         _locale.value = systemLocale;
+        await LocaleSettings.setLocaleRaw(systemLocale.languageCode);
         await Get.updateLocale(systemLocale);
       }
     } catch (e) {
       _locale.value = const Locale('vi');
+      await LocaleSettings.setLocaleRaw('vi');
       await Get.updateLocale(const Locale('vi'));
     }
   }
@@ -35,6 +39,7 @@ class LocaleService extends GetxService {
   Future<void> setLocale(Locale locale) async {
     _locale.value = locale;
     await _storageService.setString(AppConfig.keyLanguage, locale.languageCode);
+    await LocaleSettings.setLocaleRaw(locale.languageCode);
     await Get.updateLocale(locale);
   }
 

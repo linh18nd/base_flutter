@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:base_flutter/core/config/app_theme.dart';
+import 'package:base_flutter/core/utils/localization_extensions.dart';
 
 class ErrorWidget extends StatelessWidget {
   final String message;
@@ -22,7 +23,10 @@ class ErrorWidget extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.retry),
+            ),
           ],
         ],
       ),

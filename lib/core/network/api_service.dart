@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:base_flutter/core/network/api_client.dart';
 import 'package:base_flutter/core/network/api_response.dart';
+import 'package:base_flutter/i18n/gen/translations.g.dart';
 
 abstract class ApiService {
   final ApiClient apiClient;
@@ -30,13 +31,13 @@ abstract class ApiService {
         );
       } else {
         return ApiResponse.error(
-          message: 'Request failed',
+          message: t.request_failed,
           statusCode: response.statusCode,
         );
       }
     } catch (e) {
       return ApiResponse.error(
-        message: 'Error parsing response: ${e.toString()}',
+        message: '${t.error_parsing_response}: ${e.toString()}',
         error: e,
       );
     }
@@ -44,13 +45,13 @@ abstract class ApiService {
 
   ApiResponse<T> handleError<T>(dynamic error) {
     if (error is DioException) {
-      String message = 'An error occurred';
+      String message = t.an_error_occurred;
 
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          message = 'Connection timeout';
+          message = t.connection_timeout;
           break;
         case DioExceptionType.badResponse:
           final dynamic data = error.response?.data;
@@ -66,19 +67,19 @@ abstract class ApiService {
               ? serverMessage!
               : (statusMessage?.isNotEmpty == true
                     ? statusMessage!
-                    : 'Server error');
+                    : t.server_error);
           break;
         case DioExceptionType.cancel:
-          message = 'Request cancelled';
+          message = t.request_cancelled;
           break;
         case DioExceptionType.connectionError:
-          message = 'Connection error';
+          message = t.connection_error;
           break;
         case DioExceptionType.unknown:
-          message = 'No internet connection';
+          message = t.no_internet_connection;
           break;
         default:
-          message = 'An error occurred';
+          message = t.an_error_occurred;
       }
 
       return ApiResponse.error(
