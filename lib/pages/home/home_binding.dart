@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'home_controller.dart';
+import 'package:base_flutter/pages/home/home_controller.dart';
 
 class HomeBinding extends Bindings {
   @override

@@ -1,5 +1,5 @@
-import '../core/network/api_response.dart';
-import '../core/network/api_service.dart';
+import 'package:base_flutter/core/network/api_response.dart';
+import 'package:base_flutter/core/network/api_service.dart';
 
 class ExampleService extends ApiService {
   ExampleService(super.apiClient);

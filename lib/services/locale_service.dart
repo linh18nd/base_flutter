@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../core/storage/storage_service.dart';
-import '../core/config/app_config.dart';
+import 'package:base_flutter/core/storage/storage_service.dart';
+import 'package:base_flutter/core/config/app_config.dart';
 
 class LocaleService extends GetxService {
   final StorageService _storageService = Get.find<StorageService>();

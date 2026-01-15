@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'home_controller.dart';
-import '../../core/utils/localization_extensions.dart';
-import '../../core/config/app_theme.dart';
+import 'package:base_flutter/pages/home/home_controller.dart';
+import 'package:base_flutter/core/utils/localization_extensions.dart';
+import 'package:base_flutter/core/config/app_theme.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});

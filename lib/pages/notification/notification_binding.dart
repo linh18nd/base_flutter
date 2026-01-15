@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'notification_controller.dart';
+import 'package:base_flutter/pages/notification/notification_controller.dart';
 
 class NotificationBinding extends Bindings {
   @override
@@ -7,7 +7,3 @@ class NotificationBinding extends Bindings {
     Get.lazyPut<NotificationController>(() => NotificationController());
   }
 }
-
-
-
-

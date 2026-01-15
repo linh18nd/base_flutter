@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'setting_controller.dart';
-import '../../core/utils/localization_extensions.dart';
-import '../../services/theme_service.dart';
-import '../../services/locale_service.dart';
-import '../../core/config/app_theme.dart';
+import 'package:base_flutter/pages/setting/setting_controller.dart';
+import 'package:base_flutter/core/utils/localization_extensions.dart';
+import 'package:base_flutter/services/theme_service.dart';
+import 'package:base_flutter/services/locale_service.dart';
+import 'package:base_flutter/core/config/app_theme.dart';
 
 class SettingPage extends GetView<SettingController> {
   const SettingPage({super.key});

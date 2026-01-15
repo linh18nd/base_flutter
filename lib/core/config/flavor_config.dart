@@ -1,4 +1,4 @@
-import 'env_service.dart';
+import 'package:base_flutter/core/config/env_service.dart';
 
 class FlavorConfig {
   static Environment getFlavorFromArgs(List<String> args) {

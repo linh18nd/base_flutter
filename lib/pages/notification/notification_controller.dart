@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import '../../core/base/base_controller.dart';
-import '../../data/models/notification_model.dart';
+import 'package:base_flutter/core/base/base_controller.dart';
+import 'package:base_flutter/data/models/notification_model.dart';
 
 class NotificationController extends BaseController {
   final notifications = <NotificationModel>[].obs;

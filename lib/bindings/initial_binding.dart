@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import '../core/network/api_client.dart';
-import '../core/storage/storage_service.dart';
-import '../data/repositories/post_repository.dart';
-import '../services/theme_service.dart';
-import '../services/locale_service.dart';
-import '../services/ui_service.dart';
+import 'package:base_flutter/core/network/api_client.dart';
+import 'package:base_flutter/core/storage/storage_service.dart';
+import 'package:base_flutter/data/repositories/post_repository.dart';
+import 'package:base_flutter/services/theme_service.dart';
+import 'package:base_flutter/services/locale_service.dart';
+import 'package:base_flutter/services/ui_service.dart';
 
 class InitialBinding {
   static Future<void> init() async {

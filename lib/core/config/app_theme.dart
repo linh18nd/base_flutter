@@ -1,4 +1,4 @@
-import '../utils/screen_util_extensions.dart';
+import 'package:base_flutter/core/utils/screen_util_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AppColors {

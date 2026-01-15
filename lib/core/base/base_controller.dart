@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-import '../utils/logger.dart';
-import '../../services/ui_service.dart';
+import 'package:base_flutter/core/utils/logger.dart';
+import 'package:base_flutter/services/ui_service.dart';
 
 class BaseController extends GetxController {
   final isLoading = false.obs;

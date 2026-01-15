@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import '../../core/base/base_controller.dart';
-import '../../services/theme_service.dart';
-import '../../services/locale_service.dart';
+import 'package:base_flutter/core/base/base_controller.dart';
+import 'package:base_flutter/services/theme_service.dart';
+import 'package:base_flutter/services/locale_service.dart';
 
 class SettingController extends BaseController {
   final themeService = Get.find<ThemeService>();
