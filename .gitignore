@@ -50,3 +50,6 @@ app.*.map.json
 #dot env files
 .env
 .env.*
+
+# Android release keystore (keep local only)
+keystore.jks
