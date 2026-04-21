@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
-import 'package:base_flutter/core/utils/logger.dart';
 import 'package:base_flutter/services/ui_service.dart';
 
 class BaseController extends GetxController {
@@ -13,14 +13,14 @@ class BaseController extends GetxController {
   Future<T?> runWithLoading<T>(
     Future<T> Function() action, {
     bool showOverlay = true,
-    String? loadingMessage,
     bool rethrowError = false,
   }) async {
+    String? errorToShow;
+    VoidCallback? releaseLoading;
     try {
       isLoading.value = true;
       if (showOverlay) {
-        Logger.d('Showing loading overlay', runtimeType.toString());
-        await _ui.showLoading(message: loadingMessage);
+        releaseLoading = _ui.acquireLoading();
       }
 
       final result = await action();
@@ -29,9 +29,7 @@ class BaseController extends GetxController {
     } catch (e) {
       final msg = e.toString();
       errorMessage.value = msg;
-      Logger.e(msg, runtimeType.toString(), e);
-      Logger.d('Hiding loading overlay due to error', runtimeType.toString());
-      _ui.showError(msg);
+      errorToShow = msg;
 
       if (rethrowError) {
         rethrow;
@@ -39,9 +37,9 @@ class BaseController extends GetxController {
       return null;
     } finally {
       isLoading.value = false;
-      if (showOverlay) {
-        Logger.d('Hiding loading overlay', runtimeType.toString());
-        _ui.hideLoading();
+      releaseLoading?.call();
+      if (errorToShow != null) {
+        _ui.showError(errorToShow);
       }
     }
   }

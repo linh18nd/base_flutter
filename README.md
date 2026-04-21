@@ -129,11 +129,11 @@ class UserController extends GetxController {
 ```dart
 final storageService = Get.find<StorageService>();
 
-// Lưu dữ liệu
+// Save data
 await storageService.setString('key', 'value');
 await storageService.setBool('isLoggedIn', true);
 
-// Đọc dữ liệu
+// Read data
 final value = storageService.getString('key');
 final isLoggedIn = storageService.getBool('isLoggedIn');
 ```

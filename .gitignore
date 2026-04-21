@@ -41,7 +41,6 @@ app.*.map.json
 
 # Android Studio will place build artifacts here
 /android/app/debug
-/android/app/profile
 /android/app/release
 
 # FVM Version Cache
@@ -53,3 +52,4 @@ app.*.map.json
 
 # Android release keystore (keep local only)
 keystore.jks
+*.jks

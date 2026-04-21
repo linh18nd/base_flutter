@@ -64,7 +64,9 @@ class ApiClient {
       ),
     );
 
-    _dio.interceptors.add(PrettyDioLogger(requestBody: true));
+    if (!AppConfig.isProd) {
+      _dio.interceptors.add(PrettyDioLogger(requestBody: true));
+    }
   }
 
   Future<Response<dynamic>> get(

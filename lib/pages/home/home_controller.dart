@@ -32,15 +32,10 @@ class HomeController extends BaseController {
 
   Future<void> loadPosts() async {
     await runWithLoading(() async {
-      Logger.d('Start loadPosts()', runtimeType.toString());
       final response = await _postRepository.getPosts();
       if (response.success && response.data != null) {
         posts.assignAll(response.data!);
         errorMessage.value = null;
-        Logger.d(
-          'Loaded ${response.data!.length} posts',
-          runtimeType.toString(),
-        );
       } else {
         final msg = response.message ?? t.failed_to_load_posts;
         errorMessage.value = msg;

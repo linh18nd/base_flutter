@@ -45,7 +45,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   slang: ^4.11.2
   slang_flutter: ^4.11.0
-  flutter_dotenv: ^6.0.1
+  flutter_dotenv: ^6.0.0
   pretty_dio_logger: ^1.4.0
 dev_dependencies:
   flutter_test:
@@ -66,6 +66,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # Scheme mặc định trên iOS khi không truyền --flavor (phải trùng tên scheme, ví dụ dev).
+  default-flavor: dev
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

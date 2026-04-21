@@ -20,7 +20,10 @@ class HomePage extends GetView<HomeController> {
             children: [
               ElevatedButton(
                 onPressed: controller.loadPosts,
-                child: Text(context.l10n.load_posts, style: AppTextStyle.t16w500()),
+                child: Text(
+                  context.l10n.load_posts,
+                  style: AppTextStyle.t16w500(),
+                ),
               ),
               SizedBox(height: 12.h),
               Expanded(
