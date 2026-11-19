@@ -1,286 +1,128 @@
-# Base Flutter Project
+# Base Flutter — Clean Architecture
 
-Base structure cho Flutter project với GetX, Dio, SharedPreferences và JSON Annotation.
+Nhánh `clean-architecture`: base Flutter viết theo **Clean Architecture chia theo feature**, chạy song song với `main` (GetX).
 
-## Tech Stack
+## Tech stack
 
-- **State Management**: GetX
-- **Pages**: GetX Pages
-- **Local Storage**: SharedPreferences
-- **API Client**: Dio
-- **JSON Parsing**: json_annotation
+| Vai trò | Package |
+|---|---|
+| UI / theme | `material_ui`, `cupertino_ui`, `flex_color_scheme` 9 |
+| State | `flutter_bloc` (Cubit mặc định, Bloc khi cần), `bloc_concurrency`, `stream_transform` |
+| DI | `get_it` (đăng ký tay, mỗi feature tự đăng ký) |
+| Routing | `go_router` (`StatefulShellRoute` cho bottom navigation) |
+| Model | `freezed`, `json_serializable` |
+| Network | `dio`, `retrofit` |
+| Lưu trữ | `flutter_secure_storage` (token), `shared_preferences` (`SharedPreferencesAsync`) |
+| Đa ngôn ngữ | `slang` (en, vi) |
+| Log | `logger` |
+| Test / lint | `bloc_test`, `mocktail`, `very_good_analysis` |
 
-## Cấu trúc Project
+Flutter được ghim bằng fvm (`.fvmrc`), mọi lệnh bên dưới chạy qua `fvm`.
+
+## Cấu trúc thư mục
 
 ```
 lib/
-├── bindings/          # GetX bindings
-│   └── initial_binding.dart
-├── core/              # Core functionality
-│   ├── config/        # App configuration
-│   ├── constants/     # Constants
-│   ├── network/       # API client & services
-│   ├── storage/       # Local storage service
-│   └── utils/         # Utilities
-├── data/              # Data layer
-│   ├── models/        # Data models với json_annotation
-│   └── repositories/  # Data repositories
-├── pages/             # GetX pages
-│   ├── home/
-│   └── splash/
-├── routes/            # App routes
-│   └── app_pages.dart
-├── services/          # Business logic services
-├── widgets/           # Reusable widgets
-└── main.dart          # Entry point
+├── main.dart                 # chỉ gọi bootstrap()
+├── app/                      # lắp ráp ứng dụng
+│   ├── bootstrap.dart        # khởi tạo trước runApp: env, DI, settings, locale
+│   ├── app.dart              # MaterialApp.router + bloc dùng toàn app
+│   ├── app_bloc_observer.dart
+│   ├── di/injection.dart     # đăng ký core + gọi đăng ký của từng feature
+│   └── router/               # routes, GoRouter, bottom navigation shell
+├── core/                     # dùng chung, không biết gì về feature
+│   ├── env/                  # AppEnv theo flavor
+│   ├── error/                # Failure, Result, guard()
+│   ├── network/              # tạo Dio, interceptor
+│   ├── storage/              # TokenStorage (secure storage)
+│   ├── l10n/                 # Failure → câu thông báo đã dịch
+│   └── theme/ logger/ app_info/ widgets/
+├── features/
+│   └── <feature>/
+│       ├── domain/           # entities, repositories (interface), usecases — Dart thuần
+│       ├── data/             # models (DTO), datasources, repositories (impl)
+│       ├── presentation/     # cubit/ bloc/ pages/ widgets/
+│       └── <feature>_injection.dart
+└── i18n/                     # en.json, vi.json + code sinh (gen/)
 ```
 
-## Cách sử dụng
+Các feature có sẵn: `posts` (danh sách + tìm kiếm), `notifications`, `settings` (theme, ngôn ngữ), `splash`.
 
-### 1. Generate JSON Models
+## Quy tắc phụ thuộc
 
-Sau khi tạo model với `@JsonSerializable()`, chạy lệnh:
+```
+presentation ──▶ domain ◀── data
+```
+
+- `domain` không import Flutter, Dio, slang hay bất kỳ thứ gì của `data`/`presentation`.
+- `data` cài đặt interface của `domain`; DTO đổi sang entity qua `toEntity()`.
+- `presentation` chỉ gọi usecase, không gọi thẳng repository hay data source.
+- Feature không import lẫn nhau. Thứ dùng chung thì đưa vào `core/`.
+- Page không gọi `getIt`. Bloc/Cubit theo màn hình được tạo trong `app/router/app_router.dart`; bloc dùng toàn app được tạo trong `app/app.dart`.
+
+## Luồng dữ liệu và xử lý lỗi
+
+```
+Page ─▶ Cubit/Bloc ─▶ UseCase ─▶ Repository (interface)
+                                      ▲
+                     RepositoryImpl ──┘ ─▶ DataSource (retrofit) ─▶ Dio
+```
+
+1. DataSource cứ để exception ném ra (`DioException`, lỗi parse…).
+2. RepositoryImpl bọc mọi lời gọi bằng `guard(...)`, trả về `Result<T>`: `Ok(value)` hoặc `Err(failure)`. Không exception nào lọt ra khỏi tầng data.
+3. `Failure` là sealed class (`NetworkFailure`, `TimeoutFailure`, `ServerFailure`, `UnauthorizedFailure`, `ParsingFailure`, …). Bloc/Cubit dùng `switch` bắt buộc xử lý đủ trường hợp.
+4. Chỉ ở UI mới đổi `Failure` thành chữ: `failure.message(context.t)` (`core/l10n/failure_message.dart`).
+
+## Cubit hay Bloc?
+
+> Mặc định dùng **Cubit**. Chỉ dùng **Bloc** khi cần biến đổi luồng sự kiện (debounce, throttle, huỷ request cũ, xếp hàng) hoặc cần log chính xác hành động nào gây ra state. Một Cubit sau này cần chuyển sang Bloc thì phần UI hầu như không phải sửa.
+
+Ví dụ trong code:
+
+- `PostsCubit`, `NotificationsCubit`, `SettingsCubit`: Cubit, UI gọi hàm trực tiếp.
+- `PostSearchBloc`: Bloc, dùng `debounceRestartable()` để chờ người dùng gõ xong 350ms mới gọi API, và bỏ kết quả của lần tìm cũ nếu có lần mới.
+
+## Thêm một feature mới
+
+1. Tạo `lib/features/<tên>/` với 3 tầng `domain/`, `data/`, `presentation/`.
+2. **domain**: entity (`@freezed`), interface repository trả `Future<Result<T>>`, mỗi usecase một class có `call(...)`.
+3. **data**: DTO (`@freezed` + `fromJson` + `toEntity()`), data source (retrofit `@RestApi()`), `RepositoryImpl` bọc bằng `guard()`.
+4. **presentation**: Cubit/Bloc + state (`@freezed` sealed), page dùng `BlocBuilder` + `switch`.
+5. Tạo `<tên>_injection.dart` với hàm `register<Tên>Feature(GetIt getIt)` và gọi nó trong `app/di/injection.dart`.
+6. Thêm route trong `app/router/routes.dart` + `app_router.dart` (tạo Bloc/Cubit ngay tại route).
+7. Thêm chuỗi vào `lib/i18n/en.json` và `vi.json`.
+8. Chạy sinh code, viết test cho repository và Cubit/Bloc.
+
+## Chạy app
 
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+fvm flutter run --flavor dev
 ```
 
-### 2. Tạo Model mới
+Môi trường xác định **chỉ bằng `--flavor`** (`dev` / `stag` / `prod`). Xem chi tiết và cách truyền secret trong [FLAVORS.md](FLAVORS.md).
 
-```dart
-import 'package:json_annotation/json_annotation.dart';
-import 'base_model.dart';
-
-part 'user_model.g.dart';
-
-@JsonSerializable()
-class UserModel extends BaseModel {
-  final String name;
-  final String email;
-
-  UserModel({
-    super.id,
-    required this.name,
-    required this.email,
-    super.createdAt,
-    super.updatedAt,
-  });
-
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() => _$UserModelToJson(this);
-}
-```
-
-### 3. Tạo Service mới
-
-```dart
-import 'package:base_flutter/core/network/api_service.dart';
-import 'package:base_flutter/data/models/user_model.dart';
-
-class UserService extends ApiService {
-  UserService(super.apiClient);
-
-  /// Trả về dữ liệu khi thành công, ném `AppException` (message đã dịch) khi lỗi.
-  Future<UserModel> getUser(int id) {
-    return request(
-      () => apiClient.get('/users/$id'),
-      (data) => UserModel.fromJson(data as Map<String, dynamic>),
-    );
-  }
-}
-```
-
-### 4. Tạo Controller mới
-
-```dart
-import 'package:get/get.dart';
-import 'package:base_flutter/core/base/base_controller.dart';
-import 'package:base_flutter/data/models/user_model.dart';
-import 'package:base_flutter/services/user_service.dart';
-
-class UserController extends BaseController {
-  final UserService _userService = Get.find();
-  final user = Rx<UserModel?>(null);
-
-  Future<void> fetchUser(int id) async {
-    // runWithLoading lo loading + bắt lỗi + hiện snackbar, controller không tự xử lý lỗi.
-    await runWithLoading(() async {
-      user.value = await _userService.getUser(id);
-    });
-  }
-}
-```
-
-### 5. Sử dụng Storage Service
-
-```dart
-final storageService = Get.find<StorageService>();
-
-// Save data
-await storageService.setString('key', 'value');
-await storageService.setBool('isLoggedIn', true);
-
-// Read data
-final value = storageService.getString('key');
-final isLoggedIn = storageService.getBool('isLoggedIn');
-```
-
-### 6. Thêm Route mới
-
-Trong `lib/routes/app_pages.dart`:
-
-```dart
-GetPage(
-  name: Routes.user,
-  page: () => const UserPage(),
-  binding: UserBinding(),
-),
-```
-
-## Configuration
-
-### Environment Files
-
-Project sử dụng file `.env` để quản lý cấu hình cho từng môi trường. Tạo 3 file trong root directory:
-
-**.env.dev** (Development):
-```env
-ENV=dev
-API_BASE_URL=https://api-dev.example.com
-API_KEY=dev_api_key_12345
-API_TIMEOUT=30
-APP_NAME=Base Flutter Dev
-APP_VERSION=1.0.0
-```
-
-**.env.stag** (Staging):
-```env
-ENV=stag
-API_BASE_URL=https://api-stag.example.com
-API_KEY=stag_api_key_67890
-API_TIMEOUT=30
-APP_NAME=Base Flutter Stag
-APP_VERSION=1.0.0
-```
-
-**.env.prod** (Production):
-```env
-ENV=prod
-API_BASE_URL=https://api.example.com
-API_KEY=prod_api_key_abcdef
-API_TIMEOUT=30
-APP_NAME=Base Flutter
-APP_VERSION=1.0.0
-```
-
-### Sử dụng Configuration trong Code
-
-Tất cả cấu hình được load tự động từ env files thông qua `AppConfig`:
-
-```dart
-import 'package:base_flutter/core/config/app_config.dart';
-
-// Get API base URL
-String apiUrl = AppConfig.baseUrl;
-
-// Get API Key
-String apiKey = AppConfig.apiKey;
-
-// Get App Name
-String appName = AppConfig.appName;
-
-// Check environment
-if (AppConfig.isDev) {
-  // Development only code
-}
-
-if (AppConfig.isProd) {
-  // Production only code
-}
-```
-
-### API Client Configuration
-
-API Client tự động sử dụng cấu hình từ env:
-
-- **Base URL**: Load từ `API_BASE_URL` trong env file
-- **API Key**: Tự động thêm vào headers nếu có
-- **Timeout**: Load từ `API_TIMEOUT` (mặc định 30 giây)
-- **Headers**: Tự động thêm Authorization token và Language header
-
-### Thêm Environment Variables mới
-
-1. Thêm variable vào các file `.env.*`:
-```env
-CUSTOM_KEY=custom_value
-```
-
-2. Sử dụng trong code:
-```dart
-import 'package:base_flutter/core/config/env_service.dart';
-
-String? customValue = EnvService.getEnv('CUSTOM_KEY');
-```
-
-### Lưu ý
-
-- File `.env.*` nên được thêm vào `.gitignore` nếu chứa sensitive data
-- Tạo file `.env.example` để làm template cho team
-- Không commit API keys thật vào git repository
-
-## Dependencies
-
-Xem `pubspec.yaml` để biết danh sách đầy đủ các dependencies.
-
-## Build Release
-
-### Android APK
+## Sinh code
 
 ```bash
-# Development
-flutter build apk --flavor dev --release
-
-# Staging
-flutter build apk --flavor stag --release
-
-# Production
-flutter build apk --flavor prod --release
+fvm dart run build_runner build
 ```
-
-### Android AppBundle
 
 ```bash
-# Development
-flutter build appbundle --flavor dev --release
-
-# Staging
-flutter build appbundle --flavor stag --release
-
-# Production
-flutter build appbundle --flavor prod --release
+fvm dart run slang
 ```
 
-### iOS
+`build_runner` sinh code cho freezed, json_serializable và retrofit. `slang` sinh code đa ngôn ngữ từ `lib/i18n/*.json` (cấu hình trong `slang.yaml`).
+
+## Test và lint
 
 ```bash
-# Development
-flutter build ios --flavor dev --release
-
-# Staging
-flutter build ios --flavor stag --release
-
-# Production
-flutter build ios --flavor prod --release
+fvm flutter test
 ```
 
-## Getting Started
+```bash
+fvm flutter analyze
+```
 
-1. Clone project
-2. Chạy `flutter pub get`
-3. Tạo các file `.env.dev`, `.env.stag`, `.env.prod` với cấu hình tương ứng
-4. Chạy `flutter pub run build_runner build --delete-conflicting-outputs` để generate JSON models
-5. Cập nhật các file `.env.*` với API URL và keys của bạn
-6. Bắt đầu phát triển!
+Test nằm trong `test/`, theo đúng cấu trúc của `lib/`: map lỗi (`guard`), repository, Cubit/Bloc (kể cả debounce của tìm kiếm) và feature notifications chạy từ đầu đến cuối.
+
+Lint dùng `very_good_analysis`, tắt 3 rule trong `analysis_options.yaml` (có ghi lý do): `public_member_api_docs`, `sort_pub_dependencies`, `unnecessary_type_name_in_constructor`.

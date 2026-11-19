@@ -2,5 +2,5 @@ targets:
   $default:
     builders:
       json_serializable:
-        generate_for:
-          - lib/data/models/*.dart
+        options:
+          explicit_to_json: true

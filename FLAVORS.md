@@ -1,93 +1,70 @@
 # Flavor Configuration Guide
 
-Project này hỗ trợ 3 môi trường (flavors): **dev**, **stag**, và **prod**.
+Project hỗ trợ 3 môi trường (flavor): **dev**, **stag**, **prod**.
 
-## Cấu trúc
+## Cách hoạt động
 
-### Environment Files
-Tạo các file `.env` trong root directory:
+- Môi trường được xác định **chỉ bằng `--flavor`**. Flutter tự gán hằng `appFlavor`: Android lấy từ `--flavor`, iOS lấy từ build configuration (`Debug-dev`, `Release-prod`…), nên build bằng CLI, CI, VS Code hay Xcode đều cho cùng kết quả.
+- `lib/core/env/app_env.dart` đọc `appFlavor` và chọn cấu hình tương ứng (base URL, timeout). Các giá trị **không bí mật** này viết thẳng trong code, theo từng flavor.
+- Không còn dùng file `.env` đóng gói vào app như trên `main`, nên bản build không chứa cấu hình của flavor khác.
+- Thiếu `--flavor` thì app dùng `dev` và in cảnh báo ra log.
 
-- `.env.dev` - Development environment
-- `.env.stag` - Staging environment  
-- `.env.prod` - Production environment
+## Chạy app
 
-### Format của file .env:
-```env
-ENV=dev
-API_BASE_URL=https://api-dev.example.com
-API_KEY=dev_api_key_12345
-API_TIMEOUT=30
-APP_NAME=Base Flutter Dev
-APP_VERSION=1.0.0
-```
-
-## Cách chạy
-
-Môi trường được xác định **chỉ bằng `--flavor`**: Flutter tự gán hằng `appFlavor` (Android lấy từ `--flavor`, iOS lấy từ build configuration như `Debug-dev`), `FlavorConfig` đọc hằng này để nạp đúng file `.env.*`. Không cần (và không còn dùng) `--dart-define=FLAVOR=...`. Thiếu `--flavor` thì app rơi về `dev` và in cảnh báo.
-
-### Chạy app
 ```bash
 fvm flutter run --flavor dev
+```
+
+```bash
 fvm flutter run --flavor stag
+```
+
+```bash
 fvm flutter run --flavor prod
 ```
 
 VS Code: chọn cấu hình tương ứng trong `.vscode/launch.json` (Dev/Stag/Prod, debug hoặc release).
 
-### Build
+## Build
+
 ```bash
 fvm flutter build apk --flavor prod
+```
+
+```bash
 fvm flutter build appbundle --flavor prod
+```
+
+```bash
 fvm flutter build ipa --flavor prod
 ```
 
-## Sử dụng trong code
+## Secret (API key…)
 
-### Truy cập environment variables:
-```dart
-import 'package:base_flutter/core/config/env_service.dart';
-import 'package:base_flutter/core/config/app_config.dart';
+Secret không commit vào git và không viết trong code. Truyền lúc build bằng `--dart-define-from-file`:
 
-// Get API base URL
-String apiUrl = AppConfig.baseUrl;
+1. Copy `env/example.json` thành `env/<flavor>.json` (các file này đã được gitignore) rồi điền giá trị.
+2. Thêm cờ khi chạy hoặc build:
 
-// Get API Key
-String apiKey = AppConfig.apiKey;
-
-// Check environment
-if (AppConfig.isDev) {
-  // Development only code
-}
-
-if (AppConfig.isProd) {
-  // Production only code
-}
+```bash
+fvm flutter run --flavor dev --dart-define-from-file=env/dev.json
 ```
 
-### Truy cập trực tiếp từ EnvService:
-```dart
-import 'package:base_flutter/core/config/env_service.dart';
+| Key | Ý nghĩa |
+|---|---|
+| `API_KEY` | Gửi kèm header `X-API-Key` nếu có giá trị |
+| `API_BASE_URL` | Ghi đè base URL mặc định của flavor (ví dụ trỏ sang máy local) |
 
-String? customValue = EnvService.getEnv('CUSTOM_KEY');
-```
+Lưu ý: giá trị `--dart-define` vẫn nằm trong binary của app, nên chỉ dùng cho key phía client. Secret thật sự (khoá server, mật khẩu) không bao giờ được đưa vào app.
 
-## Android Configuration
+## Android
 
-Flavors đã được cấu hình trong `android/app/build.gradle.kts`:
+Flavor cấu hình trong `android/app/build.gradle.kts`:
 
-- **dev**: Application ID suffix `.dev`, version suffix `-dev`
-- **stag**: Application ID suffix `.stag`, version suffix `-stag`
-- **prod**: No suffix (production)
+- **dev**: applicationId thêm `.dev`, version thêm `-dev`
+- **stag**: applicationId thêm `.stag`, version thêm `-stag`
+- **prod**: không có hậu tố
 
-## iOS Configuration
+## iOS
 
-Đã cấu hình sẵn trong Xcode: mỗi flavor có scheme riêng (`dev`, `stag`, `prod`) và build configuration `Debug-<flavor>` / `Release-<flavor>`, dùng file `ios/Flutter/<flavor>Debug.xcconfig` / `<flavor>Release.xcconfig` để đặt bundle ID và tên hiển thị. Build thẳng từ Xcode bằng scheme tương ứng cũng nạp đúng môi trường.
-
-## Lưu ý
-
-- File `.env.*` nên được thêm vào `.gitignore` nếu chứa sensitive data
-- Tạo file `.env.example` để làm template
-- Không commit API keys thật vào git
-
-
-
+Mỗi flavor có scheme riêng (`dev`, `stag`, `prod`) và build configuration `Debug-<flavor>` / `Release-<flavor>`. Các file `ios/Flutter/<flavor>Debug.xcconfig` / `<flavor>Release.xcconfig` đặt bundle ID và tên hiển thị. Plugin native được quản lý bằng Swift Package Manager (không dùng CocoaPods).

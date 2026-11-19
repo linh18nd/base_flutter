@@ -14,7 +14,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   ///
   /// Usage:
   /// final t = Translations.of(context);
-  static Translations of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context).translations;
+  static Translations of(BuildContext context) =>
+      InheritedLocaleData.of<AppLocale, Translations>(context).translations;
 
   /// You can call this constructor and build your own translation instance of this locale.
   /// Constructing via the enum [AppLocale.build] is preferred.
@@ -23,7 +24,10 @@ class Translations with BaseTranslations<AppLocale, Translations> {
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
     TranslationMetadata<AppLocale, Translations>? meta,
-  }) : assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+  }) : assert(
+         overrides == null,
+         'Set "translation_overrides: true" in order to enable this feature.',
+       ),
        _meta =
            meta ??
            TranslationMetadata(
@@ -40,7 +44,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
   late final Translations _root = this; // ignore: unused_field
 
-  Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
+  Translations $copyWith({
+    TranslationMetadata<AppLocale, Translations>? meta,
+  }) => Translations(meta: meta ?? this.$meta);
 
   // Translations
 
@@ -49,55 +55,71 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// vi: 'Base Flutter'
   String get app_name => 'Base Flutter';
 
-  /// en: 'Welcome'
-  ///
-  /// vi: 'Chào mừng'
-  String get welcome => 'Chào mừng';
-
   /// en: 'Home'
   ///
   /// vi: 'Trang chủ'
   String get home => 'Trang chủ';
 
-  /// en: 'Splash'
+  /// en: 'Notifications'
   ///
-  /// vi: 'Màn hình khởi động'
-  String get splash => 'Màn hình khởi động';
+  /// vi: 'Thông báo'
+  String get notification => 'Thông báo';
 
-  /// en: 'Counter'
+  /// en: 'Settings'
   ///
-  /// vi: 'Bộ đếm'
-  String get counter => 'Bộ đếm';
+  /// vi: 'Cài đặt'
+  String get setting => 'Cài đặt';
 
-  /// en: 'Increment Counter'
+  /// en: 'Load posts'
   ///
-  /// vi: 'Tăng bộ đếm'
-  String get increment_counter => 'Tăng bộ đếm';
+  /// vi: 'Tải bài viết'
+  String get load_posts => 'Tải bài viết';
 
-  /// en: 'Theme Mode'
+  /// en: 'No posts loaded'
+  ///
+  /// vi: 'Chưa có bài viết nào'
+  String get no_posts_loaded => 'Chưa có bài viết nào';
+
+  /// en: 'Search'
+  ///
+  /// vi: 'Tìm kiếm'
+  String get search => 'Tìm kiếm';
+
+  /// en: 'Search posts...'
+  ///
+  /// vi: 'Tìm bài viết...'
+  String get search_hint => 'Tìm bài viết...';
+
+  /// en: 'Type a keyword to search posts'
+  ///
+  /// vi: 'Nhập từ khoá để tìm bài viết'
+  String get type_to_search => 'Nhập từ khoá để tìm bài viết';
+
+  /// en: 'No results for "{{query}}"'
+  ///
+  /// vi: 'Không tìm thấy kết quả cho "{{query}}"'
+  String no_results({required Object query}) =>
+      'Không tìm thấy kết quả cho "${query}"';
+
+  /// en: 'Theme mode'
   ///
   /// vi: 'Chế độ giao diện'
   String get theme_mode => 'Chế độ giao diện';
 
-  /// en: 'Switch to Light Mode'
+  /// en: 'System'
   ///
-  /// vi: 'Chuyển sang chế độ sáng'
-  String get switch_to_light_mode => 'Chuyển sang chế độ sáng';
+  /// vi: 'Theo hệ thống'
+  String get system_mode => 'Theo hệ thống';
 
-  /// en: 'Switch to Dark Mode'
+  /// en: 'Light'
   ///
-  /// vi: 'Chuyển sang chế độ tối'
-  String get switch_to_dark_mode => 'Chuyển sang chế độ tối';
+  /// vi: 'Chế độ sáng'
+  String get light_mode => 'Chế độ sáng';
 
-  /// en: 'Current'
+  /// en: 'Dark'
   ///
-  /// vi: 'Hiện tại'
-  String get current => 'Hiện tại';
-
-  /// en: 'Toggle Theme'
-  ///
-  /// vi: 'Chuyển đổi giao diện'
-  String get toggle_theme => 'Chuyển đổi giao diện';
+  /// vi: 'Chế độ tối'
+  String get dark_mode => 'Chế độ tối';
 
   /// en: 'Language'
   ///
@@ -114,80 +136,51 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// vi: 'Tiếng Việt'
   String get vietnamese => 'Tiếng Việt';
 
-  /// en: 'Settings'
-  ///
-  /// vi: 'Cài đặt'
-  String get setting => 'Cài đặt';
-
-  /// en: 'Notifications'
-  ///
-  /// vi: 'Thông báo'
-  String get notification => 'Thông báo';
-
-  /// en: 'Dark Mode'
-  ///
-  /// vi: 'Chế độ tối'
-  String get dark_mode => 'Chế độ tối';
-
-  /// en: 'Light Mode'
-  ///
-  /// vi: 'Chế độ sáng'
-  String get light_mode => 'Chế độ sáng';
-
-  /// en: 'App Information'
+  /// en: 'App info'
   ///
   /// vi: 'Thông tin ứng dụng'
   String get app_info => 'Thông tin ứng dụng';
 
-  /// en: 'Version 1.0.0'
+  /// en: 'Version {{version}} ({{build}})'
   ///
-  /// vi: 'Phiên bản 1.0.0'
-  String get app_version => 'Phiên bản 1.0.0';
+  /// vi: 'Phiên bản {{version}} ({{build}})'
+  String app_version({required Object version, required Object build}) =>
+      'Phiên bản ${version} (${build})';
 
   /// en: 'No notifications'
   ///
   /// vi: 'Không có thông báo'
   String get no_notifications => 'Không có thông báo';
 
-  /// en: 'Clear All'
+  /// en: 'Clear all'
   ///
   /// vi: 'Xóa tất cả'
   String get clear_all => 'Xóa tất cả';
 
-  /// en: 'Load posts'
+  /// en: 'Welcome'
   ///
-  /// vi: 'Tải bài viết'
-  String get load_posts => 'Tải bài viết';
+  /// vi: 'Chào mừng'
+  String get welcome => 'Chào mừng';
 
-  /// en: 'No posts loaded'
+  /// en: 'Welcome to the Base Flutter app'
   ///
-  /// vi: 'Chưa có bài viết nào'
-  String get no_posts_loaded => 'Chưa có bài viết nào';
+  /// vi: 'Chào mừng đến với ứng dụng Base Flutter'
+  String get welcome_message => 'Chào mừng đến với ứng dụng Base Flutter';
 
-  /// en: 'Failed to load posts'
+  /// en: 'Update available'
   ///
-  /// vi: 'Không thể tải bài viết'
-  String get failed_to_load_posts => 'Không thể tải bài viết';
+  /// vi: 'Có bản cập nhật'
+  String get update_available => 'Có bản cập nhật';
 
-  /// en: 'Error'
+  /// en: 'A new version of the app is available'
   ///
-  /// vi: 'Lỗi'
-  String get error => 'Lỗi';
-
-  /// en: 'Info'
-  ///
-  /// vi: 'Thông tin'
-  String get info => 'Thông tin';
+  /// vi: 'Đã có phiên bản mới của ứng dụng'
+  String get update_available_message => 'Đã có phiên bản mới của ứng dụng';
 
   /// en: 'Retry'
   ///
   /// vi: 'Thử lại'
   String get retry => 'Thử lại';
-
-  /// en: 'Request failed'
-  ///
-  /// vi: 'Yêu cầu thất bại'
-  String get request_failed => 'Yêu cầu thất bại';
 
   /// en: 'Error parsing response'
   ///
@@ -199,7 +192,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// vi: 'Đã xảy ra lỗi'
   String get an_error_occurred => 'Đã xảy ra lỗi';
 
-  /// en: 'Connection timeout'
+  /// en: 'Connection timed out'
   ///
   /// vi: 'Hết thời gian kết nối'
   String get connection_timeout => 'Hết thời gian kết nối';
@@ -214,28 +207,18 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// vi: 'Yêu cầu đã bị hủy'
   String get request_cancelled => 'Yêu cầu đã bị hủy';
 
-  /// en: 'Connection error'
+  /// en: 'Connection error, please check your internet'
   ///
-  /// vi: 'Lỗi kết nối'
-  String get connection_error => 'Lỗi kết nối';
+  /// vi: 'Lỗi kết nối, vui lòng kiểm tra internet'
+  String get connection_error => 'Lỗi kết nối, vui lòng kiểm tra internet';
 
-  /// en: 'No internet connection'
+  /// en: 'Your session has expired'
   ///
-  /// vi: 'Không có kết nối internet'
-  String get no_internet_connection => 'Không có kết nối internet';
+  /// vi: 'Phiên đăng nhập đã hết hạn'
+  String get unauthorized => 'Phiên đăng nhập đã hết hạn';
 
-  /// en: 'Welcome to Base Flutter App'
+  /// en: 'Could not save data on this device'
   ///
-  /// vi: 'Chào mừng đến với ứng dụng Base Flutter'
-  String get welcome_message => 'Chào mừng đến với ứng dụng Base Flutter';
-
-  /// en: 'Update Available'
-  ///
-  /// vi: 'Có bản cập nhật'
-  String get update_available => 'Có bản cập nhật';
-
-  /// en: 'A new version of the app is available'
-  ///
-  /// vi: 'Đã có phiên bản mới của ứng dụng'
-  String get update_available_message => 'Đã có phiên bản mới của ứng dụng';
+  /// vi: 'Không thể lưu dữ liệu trên thiết bị'
+  String get storage_error => 'Không thể lưu dữ liệu trên thiết bị';
 }

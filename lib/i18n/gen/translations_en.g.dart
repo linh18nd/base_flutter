@@ -11,7 +11,8 @@ import 'package:slang/generated.dart';
 import 'translations.g.dart';
 
 // Path: <root>
-class TranslationsEn extends Translations with BaseTranslations<AppLocale, Translations> {
+class TranslationsEn extends Translations
+    with BaseTranslations<AppLocale, Translations> {
   /// You can call this constructor and build your own translation instance of this locale.
   /// Constructing via the enum [AppLocale.build] is preferred.
   TranslationsEn({
@@ -19,7 +20,10 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
     TranslationMetadata<AppLocale, Translations>? meta,
-  }) : assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+  }) : assert(
+         overrides == null,
+         'Set "translation_overrides: true" in order to enable this feature.',
+       ),
        _meta =
            meta ??
            TranslationMetadata(
@@ -28,7 +32,10 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
              cardinalResolver: cardinalResolver,
              ordinalResolver: ordinalResolver,
            ),
-       super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+       super(
+         cardinalResolver: cardinalResolver,
+         ordinalResolver: ordinalResolver,
+       );
 
   /// Metadata for the translations of <en>.
   final TranslationMetadata<AppLocale, Translations> _meta;
@@ -38,31 +45,39 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
   late final TranslationsEn _root = this; // ignore: unused_field
 
   @override
-  TranslationsEn $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsEn(meta: meta ?? this.$meta);
+  TranslationsEn $copyWith({
+    TranslationMetadata<AppLocale, Translations>? meta,
+  }) => TranslationsEn(meta: meta ?? this.$meta);
 
   // Translations
   @override
   String get app_name => 'Base Flutter';
   @override
-  String get welcome => 'Welcome';
-  @override
   String get home => 'Home';
   @override
-  String get splash => 'Splash';
+  String get notification => 'Notifications';
   @override
-  String get counter => 'Counter';
+  String get setting => 'Settings';
   @override
-  String get increment_counter => 'Increment Counter';
+  String get load_posts => 'Load posts';
   @override
-  String get theme_mode => 'Theme Mode';
+  String get no_posts_loaded => 'No posts loaded';
   @override
-  String get switch_to_light_mode => 'Switch to Light Mode';
+  String get search => 'Search';
   @override
-  String get switch_to_dark_mode => 'Switch to Dark Mode';
+  String get search_hint => 'Search posts...';
   @override
-  String get current => 'Current';
+  String get type_to_search => 'Type a keyword to search posts';
   @override
-  String get toggle_theme => 'Toggle Theme';
+  String no_results({required Object query}) => 'No results for "${query}"';
+  @override
+  String get theme_mode => 'Theme mode';
+  @override
+  String get system_mode => 'System';
+  @override
+  String get light_mode => 'Light';
+  @override
+  String get dark_mode => 'Dark';
   @override
   String get language => 'Language';
   @override
@@ -70,53 +85,39 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
   @override
   String get vietnamese => 'Vietnamese';
   @override
-  String get setting => 'Settings';
+  String get app_info => 'App info';
   @override
-  String get notification => 'Notifications';
-  @override
-  String get dark_mode => 'Dark Mode';
-  @override
-  String get light_mode => 'Light Mode';
-  @override
-  String get app_info => 'App Information';
-  @override
-  String get app_version => 'Version 1.0.0';
+  String app_version({required Object version, required Object build}) =>
+      'Version ${version} (${build})';
   @override
   String get no_notifications => 'No notifications';
   @override
-  String get clear_all => 'Clear All';
+  String get clear_all => 'Clear all';
   @override
-  String get load_posts => 'Load posts';
+  String get welcome => 'Welcome';
   @override
-  String get no_posts_loaded => 'No posts loaded';
+  String get welcome_message => 'Welcome to the Base Flutter app';
   @override
-  String get failed_to_load_posts => 'Failed to load posts';
+  String get update_available => 'Update available';
   @override
-  String get error => 'Error';
-  @override
-  String get info => 'Info';
+  String get update_available_message =>
+      'A new version of the app is available';
   @override
   String get retry => 'Retry';
-  @override
-  String get request_failed => 'Request failed';
   @override
   String get error_parsing_response => 'Error parsing response';
   @override
   String get an_error_occurred => 'An error occurred';
   @override
-  String get connection_timeout => 'Connection timeout';
+  String get connection_timeout => 'Connection timed out';
   @override
   String get server_error => 'Server error';
   @override
   String get request_cancelled => 'Request cancelled';
   @override
-  String get connection_error => 'Connection error';
+  String get connection_error => 'Connection error, please check your internet';
   @override
-  String get no_internet_connection => 'No internet connection';
+  String get unauthorized => 'Your session has expired';
   @override
-  String get welcome_message => 'Welcome to Base Flutter App';
-  @override
-  String get update_available => 'Update Available';
-  @override
-  String get update_available_message => 'A new version of the app is available';
+  String get storage_error => 'Could not save data on this device';
 }

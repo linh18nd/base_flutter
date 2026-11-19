@@ -53,3 +53,7 @@ app.*.map.json
 # Android release keystore (keep local only)
 keystore.jks
 *.jks
+
+# Per-flavor secrets for --dart-define-from-file (keep local only)
+/env/*.json
+!/env/example.json
