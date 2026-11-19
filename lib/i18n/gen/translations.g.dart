@@ -6,7 +6,7 @@
 /// Locales: 2
 /// Strings: 78 (39 per locale)
 ///
-/// Built on 2026-04-10 at 07:13 UTC
+/// Built on 2026-11-19 at 03:14 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
@@ -147,38 +147,4 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, Translations> {
   static AppLocale findDeviceLocale() => instance.findDeviceLocale();
   static List<Locale> get supportedLocales => instance.supportedLocales;
   static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
-}
-
-// interfaces generated as mixins
-
-mixin PageData2 {
-  String get title;
-  String? get content => null;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! PageData2) return false;
-
-    final fields = $fields;
-    final otherFields = other.$fields;
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i] != otherFields[i]) return false;
-    }
-
-    return true;
-  }
-
-  @override
-  int get hashCode {
-    final fields = $fields;
-    int result = fields.first.hashCode;
-    for (final element in fields.skip(1)) {
-      result *= element.hashCode;
-    }
-
-    return result;
-  }
-
-  List<Object?> get $fields => [title, content];
 }

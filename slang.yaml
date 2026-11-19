@@ -1,0 +1,36 @@
+# Slang config. Generate with: fvm dart run slang
+base_locale: vi
+fallback_strategy: base_locale
+input_directory: lib/i18n
+input_file_pattern: .json
+output_directory: lib/i18n/gen
+output_file_name: translations.g.dart
+lazy: true
+locale_handling: true
+flutter_integration: true
+namespaces: false
+translate_var: t
+enum_name: AppLocale
+class_name: Translations
+translation_class_visibility: private
+key_case: snake
+key_map_case: camel
+param_case: pascal
+sanitization:
+  enabled: true
+  prefix: k
+  case: camel
+string_interpolation: double_braces
+flat_map: false
+translation_overrides: false
+timestamp: true
+statistics: true
+format:
+  enabled: true
+  width: 150
+autodoc:
+  enabled: true
+  locales:
+    - en
+    - vi
+generate_enum: true
