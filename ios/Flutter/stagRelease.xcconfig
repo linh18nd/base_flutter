@@ -1,4 +1,3 @@
 #include "Generated.xcconfig"
-DART_DEFINES=RkxBVk9SPXN0YWc=
 PRODUCT_BUNDLE_IDENTIFIER=com.example.baseFlutter.stag
 APP_DISPLAY_NAME=Base Flutter Stag

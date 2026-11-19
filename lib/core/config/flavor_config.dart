@@ -1,21 +1,16 @@
+import 'package:flutter/services.dart';
+
 import 'package:base_flutter/core/config/env_service.dart';
+import 'package:base_flutter/core/utils/logger.dart';
 
 class FlavorConfig {
-  static Environment getFlavorFromArgs(List<String> args) {
-    if (args.contains('--dev')) {
-      return Environment.dev;
-    } else if (args.contains('--stag')) {
-      return Environment.stag;
-    } else if (args.contains('--prod')) {
-      return Environment.prod;
-    }
+  FlavorConfig._();
 
-    return Environment.dev;
-  }
-
-  static Environment getFlavorFromEnv() {
-    const flavor = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
-    switch (flavor.toLowerCase()) {
+  /// Resolves the environment from Flutter's built-in [appFlavor], which the
+  /// tool sets from `--flavor` (Android) or the Xcode build configuration
+  /// (iOS), so CLI, CI and IDE builds always agree.
+  static Environment get currentFlavor {
+    switch (appFlavor) {
       case 'dev':
         return Environment.dev;
       case 'stag':
@@ -23,23 +18,16 @@ class FlavorConfig {
       case 'prod':
         return Environment.prod;
       default:
+        Logger.w(
+          'Unknown or missing flavor "$appFlavor", falling back to dev. '
+          'Run with --flavor dev|stag|prod.',
+          'FlavorConfig',
+        );
         return Environment.dev;
     }
   }
 
-  static Future<void> init(List<String> args) async {
-    Environment flavor;
-
-    if (args.contains('--dev') ||
-        args.contains('--stag') ||
-        args.contains('--prod')) {
-      flavor = getFlavorFromArgs(args);
-    } else {
-      flavor = getFlavorFromEnv();
-    }
-
-    await EnvService.init(flavor);
+  static Future<void> init() async {
+    await EnvService.init(currentFlavor);
   }
 }
-
-

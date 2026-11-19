@@ -23,40 +23,22 @@ APP_VERSION=1.0.0
 
 ## Cách chạy
 
-### Option 1: Sử dụng script (Recommended)
+Môi trường được xác định **chỉ bằng `--flavor`**: Flutter tự gán hằng `appFlavor` (Android lấy từ `--flavor`, iOS lấy từ build configuration như `Debug-dev`), `FlavorConfig` đọc hằng này để nạp đúng file `.env.*`. Không cần (và không còn dùng) `--dart-define=FLAVOR=...`. Thiếu `--flavor` thì app rơi về `dev` và in cảnh báo.
+
+### Chạy app
 ```bash
-# Development
-./scripts/run_dev.sh
-
-# Staging
-./scripts/run_stag.sh
-
-# Production
-./scripts/run_prod.sh
+fvm flutter run --flavor dev
+fvm flutter run --flavor stag
+fvm flutter run --flavor prod
 ```
 
-### Option 2: Sử dụng Flutter command
+VS Code: chọn cấu hình tương ứng trong `.vscode/launch.json` (Dev/Stag/Prod, debug hoặc release).
+
+### Build
 ```bash
-# Development
-flutter run --flavor dev --dart-define=FLAVOR=dev
-
-# Staging
-flutter run --flavor stag --dart-define=FLAVOR=stag
-
-# Production
-flutter run --flavor prod --dart-define=FLAVOR=prod
-```
-
-### Option 3: Build APK/IPA
-```bash
-# Development APK
-flutter build apk --flavor dev --dart-define=FLAVOR=dev
-
-# Staging APK
-flutter build apk --flavor stag --dart-define=FLAVOR=stag
-
-# Production APK
-flutter build apk --flavor prod --dart-define=FLAVOR=prod
+fvm flutter build apk --flavor prod
+fvm flutter build appbundle --flavor prod
+fvm flutter build ipa --flavor prod
 ```
 
 ## Sử dụng trong code
@@ -99,10 +81,7 @@ Flavors đã được cấu hình trong `android/app/build.gradle.kts`:
 
 ## iOS Configuration
 
-Để setup flavors cho iOS, cần cấu hình schemes trong Xcode:
-1. Mở project trong Xcode
-2. Tạo schemes cho từng flavor
-3. Set build configuration cho mỗi scheme
+Đã cấu hình sẵn trong Xcode: mỗi flavor có scheme riêng (`dev`, `stag`, `prod`) và build configuration `Debug-<flavor>` / `Release-<flavor>`, dùng file `ios/Flutter/<flavor>Debug.xcconfig` / `<flavor>Release.xcconfig` để đặt bundle ID và tên hiển thị. Build thẳng từ Xcode bằng scheme tương ứng cũng nạp đúng môi trường.
 
 ## Lưu ý
 

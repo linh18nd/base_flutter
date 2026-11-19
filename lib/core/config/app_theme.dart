@@ -33,7 +33,9 @@ class AppTextStyle {
       fontSize: fontSize?.sp,
       decoration: decoration,
       height: height,
-      fontFamily: 'NotoSansJP',
+      // Font family comes from the theme (ThemeService). To use a custom font,
+      // declare it under `flutter: fonts:` in pubspec.yaml and pass
+      // `fontFamily` to FlexThemeData.light/dark instead of hardcoding it here.
     );
   }
 

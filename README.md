@@ -77,24 +77,18 @@ class UserModel extends BaseModel {
 ### 3. Tạo Service mới
 
 ```dart
-import 'package:get/get.dart';
-import '../core/network/api_client.dart';
-import '../core/network/api_response.dart';
-import '../core/network/api_service.dart';
+import 'package:base_flutter/core/network/api_service.dart';
+import 'package:base_flutter/data/models/user_model.dart';
 
 class UserService extends ApiService {
-  UserService(ApiClient apiClient) : super(apiClient);
+  UserService(super.apiClient);
 
-  Future<ApiResponse<UserModel>> getUser(int id) async {
-    try {
-      final response = await apiClient.get('/users/$id');
-      return handleResponse<UserModel>(
-        response,
-        (data) => UserModel.fromJson(data),
-      );
-    } catch (e) {
-      return handleError<UserModel>(e);
-    }
+  /// Trả về dữ liệu khi thành công, ném `AppException` (message đã dịch) khi lỗi.
+  Future<UserModel> getUser(int id) {
+    return request(
+      () => apiClient.get('/users/$id'),
+      (data) => UserModel.fromJson(data as Map<String, dynamic>),
+    );
   }
 }
 ```
@@ -103,23 +97,19 @@ class UserService extends ApiService {
 
 ```dart
 import 'package:get/get.dart';
-import '../services/user_service.dart';
-import '../data/models/user_model.dart';
+import 'package:base_flutter/core/base/base_controller.dart';
+import 'package:base_flutter/data/models/user_model.dart';
+import 'package:base_flutter/services/user_service.dart';
 
-class UserController extends GetxController {
+class UserController extends BaseController {
   final UserService _userService = Get.find();
   final user = Rx<UserModel?>(null);
-  final isLoading = false.obs;
 
   Future<void> fetchUser(int id) async {
-    isLoading.value = true;
-    final response = await _userService.getUser(id);
-    if (response.success && response.data != null) {
-      user.value = response.data;
-    } else {
-      Get.snackbar('Error', response.message ?? 'Failed to load user');
-    }
-    isLoading.value = false;
+    // runWithLoading lo loading + bắt lỗi + hiện snackbar, controller không tự xử lý lỗi.
+    await runWithLoading(() async {
+      user.value = await _userService.getUser(id);
+    });
   }
 }
 ```

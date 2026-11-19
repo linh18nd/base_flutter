@@ -7,14 +7,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "env": {
-        "FLAVOR": "dev"
-      },
       "toolArgs": [
         "--flavor",
-        "dev",
-        "--dart-define",
-        "FLAVOR=dev"
+        "dev"
       ]
     },
     {
@@ -23,14 +18,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "env": {
-        "FLAVOR": "dev"
-      },
       "toolArgs": [
         "--flavor",
-        "dev",
-        "--dart-define",
-        "FLAVOR=dev"
+        "dev"
       ]
     },
     {
@@ -39,14 +29,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "env": {
-        "FLAVOR": "stag"
-      },
       "toolArgs": [
         "--flavor",
-        "stag",
-        "--dart-define",
-        "FLAVOR=stag"
+        "stag"
       ]
     },
     {
@@ -55,14 +40,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "env": {
-        "FLAVOR": "stag"
-      },
       "toolArgs": [
         "--flavor",
-        "stag",
-        "--dart-define",
-        "FLAVOR=stag"
+        "stag"
       ]
     },
     {
@@ -71,14 +51,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "env": {
-        "FLAVOR": "prod"
-      },
       "toolArgs": [
         "--flavor",
-        "prod",
-        "--dart-define",
-        "FLAVOR=prod"
+        "prod"
       ]
     },
     {
@@ -87,14 +62,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "env": {
-        "FLAVOR": "prod"
-      },
       "toolArgs": [
         "--flavor",
-        "prod",
-        "--dart-define",
-        "FLAVOR=prod"
+        "prod"
       ]
     }
   ]

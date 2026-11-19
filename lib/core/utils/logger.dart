@@ -17,11 +17,19 @@ class Logger {
     }
   }
 
-  static void e(String message, [String? tag, dynamic error]) { 
+  static void e(
+    String message, [
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  ]) {
     if (kDebugMode) {
       print('${_LogColors.red}[${tag ?? 'ERROR'}]${_LogColors.reset} $message');
       if (error != null) {
         print('${_LogColors.red}Error:${_LogColors.reset} $error');
+      }
+      if (stackTrace != null) {
+        print(stackTrace);
       }
     }
   }

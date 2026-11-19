@@ -10,10 +10,10 @@ import 'package:base_flutter/routes/app_pages.dart';
 import 'package:base_flutter/services/theme_service.dart';
 import 'package:base_flutter/services/locale_service.dart';
 
-void main(List<String> args) async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FlavorConfig.init(args);
+  await FlavorConfig.init();
 
   await InitialBinding.init();
 
