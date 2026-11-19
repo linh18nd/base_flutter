@@ -1,25 +1,16 @@
-import 'package:base_flutter/core/error/failure.dart';
 import 'package:base_flutter/core/error/result.dart';
+import 'package:base_flutter/core/pagination/paginated_cubit.dart';
 import 'package:base_flutter/features/posts/domain/entities/post.dart';
 import 'package:base_flutter/features/posts/domain/usecases/get_posts.dart';
-import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'posts_cubit.freezed.dart';
-part 'posts_state.dart';
-
-/// Cubit: the UI calls [load] directly, no event classes needed.
-class PostsCubit extends Cubit<PostsState> {
-  PostsCubit(this._getPosts) : super(const PostsState.initial());
+/// Infinite list of posts. Paging, refresh, end of list and errors come from
+/// [PaginatedCubit]; this class only says how to fetch one page.
+class PostsCubit extends PaginatedCubit<Post> {
+  PostsCubit(this._getPosts, {super.pageSize});
 
   final GetPosts _getPosts;
 
-  Future<void> load() async {
-    emit(const PostsState.loading());
-    final result = await _getPosts();
-    emit(switch (result) {
-      Ok(:final value) => PostsState.loaded(value),
-      Err(:final failure) => PostsState.failure(failure),
-    });
-  }
+  @override
+  Future<Result<List<Post>>> fetchPage(int page) =>
+      _getPosts(page: page, limit: pageSize);
 }

@@ -1,4 +1,5 @@
 import 'package:base_flutter/core/error/failure.dart';
+import 'package:base_flutter/core/pagination/paged_state.dart';
 import 'package:base_flutter/features/posts/domain/entities/post.dart';
 import 'package:base_flutter/features/posts/presentation/cubit/posts_cubit.dart';
 import 'package:base_flutter/features/posts/presentation/pages/posts_page.dart';
@@ -9,17 +10,18 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/pump_app.dart';
 
-class _MockPostsCubit extends MockCubit<PostsState> implements PostsCubit;
+class _MockPostsCubit extends MockCubit<PagedState<Post>> implements PostsCubit;
 
 void main() {
   late _MockPostsCubit cubit;
 
   setUp(() {
     cubit = _MockPostsCubit();
-    when(() => cubit.load()).thenAnswer((_) async {});
+    when(() => cubit.refresh()).thenAnswer((_) async {});
+    when(() => cubit.loadMore()).thenAnswer((_) async {});
   });
 
-  Future<void> pumpPage(WidgetTester tester, PostsState state) async {
+  Future<void> pumpPage(WidgetTester tester, PagedState<Post> state) async {
     when(() => cubit.state).thenReturn(state);
     await tester.pumpApp(
       const PostsPage(),
@@ -27,31 +29,36 @@ void main() {
     );
   }
 
-  testWidgets('initial state shows a load button that calls load()', (
-    tester,
-  ) async {
-    await pumpPage(tester, const PostsState.initial());
+  testWidgets('loads the first page when opened', (tester) async {
+    await pumpPage(tester, const PagedState<Post>());
 
-    await tester.tap(find.text('Load posts'));
-
-    verify(() => cubit.load()).called(1);
+    verify(() => cubit.refresh()).called(1);
   });
 
-  testWidgets('loaded state lists the posts', (tester) async {
+  testWidgets('lists the loaded posts', (tester) async {
     await pumpPage(
       tester,
-      const PostsState.loaded([
-        Post(id: 1, userId: 1, title: 'Hello Flutter', body: 'Body'),
-      ]),
+      const PagedState<Post>(
+        status: PagedStatus.success,
+        items: [Post(id: 1, userId: 1, title: 'Hello Flutter', body: 'Body')],
+        page: 1,
+        hasReachedEnd: true,
+      ),
     );
 
     expect(find.text('Hello Flutter'), findsOneWidget);
   });
 
-  testWidgets('failure state shows a localized message and retries', (
+  testWidgets('a failed first page shows a localized message and retries', (
     tester,
   ) async {
-    await pumpPage(tester, const PostsState.failure(NetworkFailure()));
+    await pumpPage(
+      tester,
+      const PagedState<Post>(
+        status: PagedStatus.failure,
+        failure: NetworkFailure(),
+      ),
+    );
 
     expect(
       find.text('Connection error, please check your internet'),
@@ -60,6 +67,7 @@ void main() {
 
     await tester.tap(find.text('Retry'));
 
-    verify(() => cubit.load()).called(1);
+    // Once on open, once from the retry button.
+    verify(() => cubit.refresh()).called(2);
   });
 }

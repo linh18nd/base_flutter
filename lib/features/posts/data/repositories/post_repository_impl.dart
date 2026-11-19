@@ -10,8 +10,11 @@ final class PostRepositoryImpl implements PostRepository {
   final PostRemoteDataSource _remote;
 
   @override
-  Future<Result<List<Post>>> getPosts() => guard(() async {
-    final dtos = await _remote.getPosts();
+  Future<Result<List<Post>>> getPosts({
+    required int page,
+    required int limit,
+  }) => guard(() async {
+    final dtos = await _remote.getPosts(page: page, limit: limit);
     return dtos.map((dto) => dto.toEntity()).toList();
   });
 

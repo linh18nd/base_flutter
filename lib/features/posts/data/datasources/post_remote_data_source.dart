@@ -9,7 +9,10 @@ abstract class PostRemoteDataSource {
   factory PostRemoteDataSource(Dio dio) = _PostRemoteDataSource;
 
   @GET('/posts')
-  Future<List<PostDto>> getPosts();
+  Future<List<PostDto>> getPosts({
+    @Query('_page') required int page,
+    @Query('_limit') required int limit,
+  });
 
   @GET('/posts')
   Future<List<PostDto>> searchPosts(@Query('q') String query);

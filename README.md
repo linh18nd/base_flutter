@@ -26,6 +26,7 @@ Mở bằng VS Code: cài các extension được gợi ý, chọn cấu hình c
 | `make run [FLAVOR=dev\|stag\|prod]` | Chạy app (tự kèm `env/<flavor>.json` nếu có) |
 | `make gen` / `make watch` | Sinh code (slang + build_runner), một lần / theo dõi liên tục |
 | `make feature name=orders entity=order` | Sinh một feature mới đủ 3 tầng + test |
+| `make shared name=users entity=user` | Sinh một module nghiệp vụ dùng chung trong `lib/shared/` |
 | `make check` | Kiểm tra format, analyze, test, nên chạy trước khi commit |
 | `make test` / `make analyze` / `make format` | Chạy riêng từng bước |
 
@@ -59,13 +60,15 @@ lib/
 │   ├── di/injection.dart     # đăng ký core + gọi đăng ký của từng feature
 │   ├── router/               # routes, GoRouter, bottom navigation shell
 │   └── splash/               # màn hình mở đầu
-├── core/                     # dùng chung, không biết gì về feature
+├── core/                     # hạ tầng kỹ thuật dùng chung, không chứa nghiệp vụ
 │   ├── env/                  # AppEnv theo flavor
 │   ├── error/                # Failure, Result, guard() / guardStorage()
 │   ├── network/              # tạo Dio, interceptor
 │   ├── storage/              # TokenStorage (secure storage)
+│   ├── pagination/           # PagedState, PaginatedCubit (danh sách cuộn vô hạn)
 │   ├── l10n/                 # Failure → câu thông báo đã dịch
-│   └── theme/ logger/ app_info/ widgets/
+│   └── theme/ logger/ app_info/ widgets/   # widgets/ có PagedListView
+├── shared/                   # nghiệp vụ dùng chung cho nhiều feature (domain + data)
 ├── features/
 │   └── <feature>/
 │       ├── domain/           # entities/ repositories/ usecases/ — không phụ thuộc Flutter
@@ -75,26 +78,38 @@ lib/
 └── i18n/                     # en.json, vi.json + code sinh (gen/)
 
 test/                         # cùng cấu trúc với lib/
+├── architecture/             # test tự kiểm tra quy tắc import giữa các tầng
 ├── helpers/pump_app.dart     # dựng sẵn l10n, theme, providers cho widget test
 ├── core/
 └── features/<feature>/{data,presentation}/
 
 bricks/feature/               # template Mason cho `make feature`
+bricks/shared/                # template Mason cho `make shared`
 env/example.json              # mẫu file secret theo flavor
 ```
 
-Các feature có sẵn làm ví dụ: `posts` (danh sách + tìm kiếm), `notifications`, `settings` (theme, ngôn ngữ).
+Các feature có sẵn làm ví dụ: `posts` (danh sách phân trang + tìm kiếm), `notifications`, `settings` (theme, ngôn ngữ).
 
 ## Quy tắc phụ thuộc
+
+Giữa các thư mục lớn:
+
+```
+app ──▶ features ──▶ shared ──▶ core
+```
+
+Bên trong mỗi feature hoặc module shared:
 
 ```
 presentation ──▶ domain ◀── data
 ```
 
+- `core/` chỉ import `core/` (và `i18n/`). `shared/` chỉ import `core/` và `shared/`. Feature import được `core/`, `shared/` và `app/router/routes.dart` (để điều hướng), **không** import feature khác.
 - `domain` không import Flutter, Dio, slang hay bất kỳ thứ gì của `data`/`presentation`. Ngoại lệ duy nhất là `freezed_annotation` (package Dart thuần) để entity bất biến và có `copyWith`.
 - `data` cài đặt interface của `domain`; DTO/model đổi sang entity qua `toEntity()`. Data source không dùng thẳng entity.
 - `presentation` chỉ gọi usecase, không gọi thẳng repository hay data source.
-- Feature không import lẫn nhau. Thứ dùng chung thì đưa vào `core/`.
+- Feature không import lẫn nhau. Nghiệp vụ dùng chung đưa vào `shared/`, hạ tầng kỹ thuật đưa vào `core/` (xem mục "Logic dùng chung" bên dưới).
+- Các quy tắc này được **kiểm tra tự động** bởi `test/architecture/architecture_test.dart` (chạy trong `make test` / `make check`). Import sai chỗ sẽ làm test fail kèm thông báo cách sửa.
 - Page không gọi `getIt`. Bloc/Cubit theo màn hình được tạo trong `app/router/app_router.dart`; bloc dùng toàn app được tạo trong `app/app.dart`.
 
 ## Quy ước
@@ -131,8 +146,39 @@ Page ─▶ Cubit/Bloc ─▶ UseCase ─▶ Repository (interface)
 
 Ví dụ trong code:
 
-- `PostsCubit`, `NotificationsCubit`, `SettingsCubit`: Cubit, UI gọi hàm trực tiếp.
+- `PostsCubit` (kế thừa `PaginatedCubit`), `NotificationsCubit`, `SettingsCubit`: Cubit, UI gọi hàm trực tiếp.
 - `PostSearchBloc`: Bloc, dùng `debounceRestartable()` để chờ người dùng gõ xong 350ms mới gọi API, và bỏ kết quả của lần tìm cũ nếu có lần mới.
+
+## Logic dùng chung giữa nhiều màn
+
+| Tình huống | Đặt ở đâu | Ví dụ trong base |
+|---|---|---|
+| Nhiều màn **trong cùng một feature** (danh sách, chi tiết, sửa) | Chung feature, dùng chung repository/usecase, **mỗi màn một Cubit**. Luồng nhiều bước cần chung một state thì tạo Cubit ở route cha (`ShellRoute`) | `posts`: `PostsPage` + `PostSearchPage` dùng chung `PostRepository` |
+| **State thay đổi** mà nhiều feature cùng đọc (user đăng nhập, giỏ hàng, badge) | **Cubit cấp app** tạo trong `app/app.dart`; dữ liệu lấy từ repository phát `Stream` làm nguồn duy nhất | `NotificationsCubit` dùng cho cả tab Thông báo và badge ở bottom nav; `SettingsCubit` cho theme và ngôn ngữ |
+| **Nghiệp vụ** (entity, repository, usecase) mà từ hai feature trở lên cần | Module trong `lib/shared/<tên>/` (chỉ `domain/` + `data/`), tạo bằng `make shared` | Xem `lib/shared/README.md` |
+| **Logic giao diện** lặp lại (phân trang, widget trạng thái) | `core/` | `PaginatedCubit` + `PagedListView` (danh sách cuộn vô hạn), `LoadingView` / `FailureView` / `MessageView` |
+
+Hai nguyên tắc:
+
+- Chỉ chuyển code lên `shared/` khi **feature thứ hai** thật sự cần. Thứ gì một feature dùng thì để trong feature đó.
+- `core/` chỉ chứa thứ **không mang nghiệp vụ** (dùng được ở bất kỳ app nào). Nghiệp vụ của app này đặt ở `shared/`.
+
+### Danh sách phân trang
+
+Màn danh sách có cuộn vô hạn chỉ cần kế thừa `PaginatedCubit` và viết một hàm tải một trang. Tải lần đầu, kéo để tải lại, tải thêm khi cuộn gần cuối, hết dữ liệu và lỗi đều đã được xử lý sẵn:
+
+```dart
+class OrdersCubit extends PaginatedCubit<Order> {
+  OrdersCubit(this._getOrders);
+  final GetOrders _getOrders;
+
+  @override
+  Future<Result<List<Order>>> fetchPage(int page) =>
+      _getOrders(page: page, limit: pageSize);
+}
+```
+
+Phía UI dùng `PagedListView` với state `PagedState<Order>`. Ví dụ đầy đủ ở `features/posts/presentation/`.
 
 ## Thêm một feature mới
 
@@ -163,6 +209,7 @@ Muốn sửa template thì sửa trong `bricks/feature/__brick__/`.
 
 - Unit test cho repository (mock data source) và Cubit/Bloc (`blocTest`): xem `test/features/posts/`.
 - Widget test: dùng `tester.pumpApp(widget, providers: [...])` trong `test/helpers/pump_app.dart` với Cubit được mock bằng `MockCubit`. Xem `test/features/posts/presentation/posts_page_test.dart`.
+- Test kiến trúc (`test/architecture/`) quét toàn bộ import trong `lib/` theo quy tắc phụ thuộc. Không cần sửa khi thêm feature; chỉ sửa `import_rules.dart` khi team đổi quy tắc.
 
 ## Chạy app và flavor
 

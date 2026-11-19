@@ -37,6 +37,9 @@ Future<void> configureDependencies(AppEnv env) async {
       ),
     );
 
+  // Shared modules (lib/shared/), registered before the features using them.
+  // e.g. registerUsersModule(getIt);
+
   // Features
   registerSettingsFeature(getIt);
   registerPostsFeature(getIt);

@@ -12,7 +12,7 @@ SRC_FILES = $(shell find lib test -name '*.dart' ! -path 'lib/i18n/gen/*' \
 	! -name '*.g.dart' ! -name '*.freezed.dart')
 
 .DEFAULT_GOAL := help
-.PHONY: help setup gen watch run test analyze format check feature clean
+.PHONY: help setup gen watch run test analyze format check feature shared clean
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -62,6 +62,20 @@ feature: ## Scaffold a feature: make feature name=orders entity=order
 	@echo "  1. Call register<Name>Feature(getIt) in lib/app/di/injection.dart"
 	@echo "  2. Add a route in lib/app/router/routes.dart and app_router.dart"
 	@echo "  3. Replace the sample fields/endpoint marked TODO(team)"
+
+shared: ## Scaffold a shared module: make shared name=users entity=user
+	@if [ -z "$(name)" ] || [ -z "$(entity)" ]; then \
+		echo "Usage: make shared name=users entity=user"; exit 1; fi
+	$(MASON) make shared --module $(name) --entity $(entity)
+	$(MAKE) gen
+	$(DART) format $$(find lib/shared/$(name) test/shared/$(name) \
+		-name '*.dart' ! -name '*.g.dart' ! -name '*.freezed.dart')
+	@echo ""
+	@echo "Next steps:"
+	@echo "  1. Call register<Name>Module(getIt) in lib/app/di/injection.dart,"
+	@echo "     before the features that use it"
+	@echo "  2. Replace the sample fields/endpoint marked TODO(team)"
+	@echo "  3. Import it from features: package:base_flutter/shared/$(name)/..."
 
 clean: ## Remove build outputs and caches
 	$(FLUTTER) clean

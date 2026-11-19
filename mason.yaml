@@ -1,5 +1,9 @@
-# Code generators for this project. Run `mason get` once after cloning.
-# Usage: mason make feature --feature orders --entity order
+# Code generators for this project. `make setup` runs `mason get` for you.
+# Usage:
+#   make feature name=orders entity=order   (screen-level feature)
+#   make shared name=users entity=user      (business module used by many features)
 bricks:
   feature:
     path: bricks/feature
+  shared:
+    path: bricks/shared

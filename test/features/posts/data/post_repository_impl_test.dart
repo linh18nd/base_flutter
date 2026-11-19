@@ -20,11 +20,11 @@ void main() {
   });
 
   test('getPosts maps DTOs to entities', () async {
-    when(() => remote.getPosts()).thenAnswer(
+    when(() => remote.getPosts(page: 1, limit: 20)).thenAnswer(
       (_) async => const [PostDto(id: 1, userId: 2, title: 't', body: 'b')],
     );
 
-    final result = await repository.getPosts();
+    final result = await repository.getPosts(page: 1, limit: 20);
 
     expect(
       result,
@@ -35,14 +35,14 @@ void main() {
   });
 
   test('getPosts returns NetworkFailure when offline', () async {
-    when(() => remote.getPosts()).thenThrow(
+    when(() => remote.getPosts(page: 1, limit: 20)).thenThrow(
       DioException(
         requestOptions: RequestOptions(path: '/posts'),
         type: DioExceptionType.connectionError,
       ),
     );
 
-    final result = await repository.getPosts();
+    final result = await repository.getPosts(page: 1, limit: 20);
 
     expect(
       result,

@@ -64,11 +64,6 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// vi: 'Cài đặt'
   String get setting => 'Cài đặt';
 
-  /// en: 'Load posts'
-  ///
-  /// vi: 'Tải bài viết'
-  String get load_posts => 'Tải bài viết';
-
   /// en: 'No posts loaded'
   ///
   /// vi: 'Chưa có bài viết nào'

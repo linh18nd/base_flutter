@@ -23,7 +23,7 @@ sanitization:
 string_interpolation: double_braces
 flat_map: false
 translation_overrides: false
-timestamp: true
+timestamp: false
 statistics: true
 format:
   enabled: true

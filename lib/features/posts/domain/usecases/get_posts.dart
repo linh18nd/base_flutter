@@ -7,5 +7,6 @@ class GetPosts {
 
   final PostRepository _repository;
 
-  Future<Result<List<Post>>> call() => _repository.getPosts();
+  Future<Result<List<Post>>> call({required int page, required int limit}) =>
+      _repository.getPosts(page: page, limit: limit);
 }

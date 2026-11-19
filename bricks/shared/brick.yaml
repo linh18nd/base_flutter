@@ -1,0 +1,16 @@
+name: shared
+description: Shared business module for base_flutter (domain + data, no UI), used by several features.
+version: 0.1.0
+
+environment:
+  mason: ">=0.1.0 <0.2.0"
+
+vars:
+  module:
+    type: string
+    description: Module folder name, plural snake_case (e.g. users, carts)
+    prompt: Module name (plural, e.g. users)?
+  entity:
+    type: string
+    description: Entity name, singular (e.g. user, cart)
+    prompt: Entity name (singular, e.g. user)?

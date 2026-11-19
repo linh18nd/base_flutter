@@ -50,8 +50,6 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
   @override
   String get setting => 'Settings';
   @override
-  String get load_posts => 'Load posts';
-  @override
   String get no_posts_loaded => 'No posts loaded';
   @override
   String get search => 'Search';
