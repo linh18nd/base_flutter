@@ -32,5 +32,6 @@
   "requestCancelled": "Request cancelled",
   "connectionError": "Connection error, please check your internet",
   "unauthorized": "Your session has expired",
-  "storageError": "Could not save data on this device"
+  "storageError": "Could not save data on this device",
+  "noData": "No data"
 }

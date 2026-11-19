@@ -1,6 +1,5 @@
-import 'package:base_flutter/core/error/failure.dart';
+import 'package:base_flutter/core/error/guard.dart';
 import 'package:base_flutter/core/error/result.dart';
-import 'package:base_flutter/core/logger/app_logger.dart';
 import 'package:base_flutter/features/settings/data/datasources/settings_local_data_source.dart';
 import 'package:base_flutter/features/settings/domain/entities/app_settings.dart';
 import 'package:base_flutter/features/settings/domain/repositories/settings_repository.dart';
@@ -11,7 +10,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
   final SettingsLocalDataSource _local;
 
   @override
-  Future<Result<AppSettings>> load() => _storage(() async {
+  Future<Result<AppSettings>> load() => guardStorage(() async {
     final themeName = await _local.readThemeMode();
     return AppSettings(
       themeMode: AppThemeMode.values.firstWhere(
@@ -24,18 +23,9 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<Result<void>> saveThemeMode(AppThemeMode mode) =>
-      _storage(() => _local.writeThemeMode(mode.name));
+      guardStorage(() => _local.writeThemeMode(mode.name));
 
   @override
   Future<Result<void>> saveLanguage(String languageCode) =>
-      _storage(() => _local.writeLanguage(languageCode));
-
-  Future<Result<T>> _storage<T>(Future<T> Function() action) async {
-    try {
-      return Ok(await action());
-    } on Object catch (e, stackTrace) {
-      appLogger.e('Settings storage failed', error: e, stackTrace: stackTrace);
-      return Err(StorageFailure(cause: e));
-    }
-  }
+      guardStorage(() => _local.writeLanguage(languageCode));
 }

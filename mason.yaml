@@ -1,0 +1,5 @@
+# Code generators for this project. Run `mason get` once after cloning.
+# Usage: mason make feature --feature orders --entity order
+bricks:
+  feature:
+    path: bricks/feature

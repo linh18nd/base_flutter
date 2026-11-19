@@ -1,7 +1,8 @@
 import 'package:base_flutter/core/error/failure.dart';
 import 'package:base_flutter/core/error/result.dart';
 import 'package:base_flutter/features/settings/domain/entities/app_settings.dart';
-import 'package:base_flutter/features/settings/domain/usecases/settings_usecases.dart';
+import 'package:base_flutter/features/settings/domain/usecases/update_language.dart';
+import 'package:base_flutter/features/settings/domain/usecases/update_theme_mode.dart';
 import 'package:base_flutter/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,29 +32,33 @@ void main() {
         updateLanguage: updateLanguage,
       );
 
-  blocTest<SettingsCubit, AppSettings>(
+  blocTest<SettingsCubit, SettingsState>(
     'setThemeMode updates state and persists it',
     build: build,
     act: (cubit) => cubit.setThemeMode(AppThemeMode.dark),
-    expect: () => const [AppSettings(themeMode: AppThemeMode.dark)],
+    expect: () => const [
+      SettingsState(settings: AppSettings(themeMode: AppThemeMode.dark)),
+    ],
     verify: (_) => verify(() => updateThemeMode(AppThemeMode.dark)).called(1),
   );
 
-  blocTest<SettingsCubit, AppSettings>(
+  blocTest<SettingsCubit, SettingsState>(
     'setThemeMode with the current mode does nothing',
     build: build,
     act: (cubit) => cubit.setThemeMode(AppThemeMode.system),
-    expect: () => const <AppSettings>[],
+    expect: () => const <SettingsState>[],
     verify: (_) => verifyNever(() => updateThemeMode(any())),
   );
 
-  blocTest<SettingsCubit, AppSettings>(
+  blocTest<SettingsCubit, SettingsState>(
     'keeps the new language even if saving fails',
     setUp: () =>
         when(() => updateLanguage(any()))
             .thenAnswer((_) async => const Err(StorageFailure())),
     build: build,
     act: (cubit) => cubit.setLanguage('en'),
-    expect: () => const [AppSettings(languageCode: 'en')],
+    expect: () => const [
+      SettingsState(settings: AppSettings(languageCode: 'en')),
+    ],
   );
 }

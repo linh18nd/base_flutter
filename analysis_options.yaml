@@ -8,6 +8,8 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - lib/i18n/gen/**
+    # Mason templates (mustache), not valid Dart until generated.
+    - bricks/**
 
 linter:
   rules:

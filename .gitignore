@@ -57,3 +57,7 @@ keystore.jks
 # Per-flavor secrets for --dart-define-from-file (keep local only)
 /env/*.json
 !/env/example.json
+
+# Mason
+.mason/
+mason-lock.json

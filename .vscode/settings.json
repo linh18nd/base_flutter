@@ -7,6 +7,19 @@
     "build",
     ".dart_tool"
   ],
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.rulers": [80]
+  },
+  // Show generated files nested under their source file in the explorer.
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.dart": "${capture}.g.dart, ${capture}.freezed.dart",
+    "pubspec.yaml": "pubspec.lock, analysis_options.yaml, build.yaml, slang.yaml, mason.yaml, .metadata",
+    "README.md": "FLAVORS.md",
+    ".gitignore": ".gitattributes, .fvmrc"
+  },
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -27,7 +40,9 @@
     "**/bower_components": true,
     "**/*.code-search": true,
     "**/.dart_tool": true,
-    "**/build": true
+    "**/build": true,
+    "**/*.g.dart": true,
+    "**/*.freezed.dart": true
   },
   "java.configuration.updateBuildConfiguration": "disabled"
 }

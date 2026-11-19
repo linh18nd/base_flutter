@@ -7,7 +7,7 @@ import 'package:base_flutter/core/env/app_env.dart';
 import 'package:base_flutter/core/error/result.dart';
 import 'package:base_flutter/core/logger/app_logger.dart';
 import 'package:base_flutter/features/settings/domain/entities/app_settings.dart';
-import 'package:base_flutter/features/settings/domain/usecases/settings_usecases.dart';
+import 'package:base_flutter/features/settings/domain/usecases/get_settings.dart';
 import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';

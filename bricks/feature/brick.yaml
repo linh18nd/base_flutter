@@ -1,0 +1,16 @@
+name: feature
+description: Clean Architecture feature for base_flutter (domain, data, presentation, DI and tests).
+version: 0.1.0
+
+environment:
+  mason: ">=0.1.0 <0.2.0"
+
+vars:
+  feature:
+    type: string
+    description: Feature folder name, plural snake_case (e.g. orders, user_profiles)
+    prompt: Feature name (plural, e.g. orders)?
+  entity:
+    type: string
+    description: Entity name, singular (e.g. order, user_profile)
+    prompt: Entity name (singular, e.g. order)?

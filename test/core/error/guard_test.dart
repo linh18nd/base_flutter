@@ -51,6 +51,30 @@ void main() {
     });
   });
 
+  group('guardStorage', () {
+    test('returns Ok with the value on success', () async {
+      final result = await guardStorage(() async => 'saved');
+      expect(
+        result,
+        isA<Ok<String>>().having((r) => r.value, 'value', 'saved'),
+      );
+    });
+
+    test('maps any error to StorageFailure', () async {
+      final result = await guardStorage<void>(
+        () async => throw Exception('disk full'),
+      );
+      expect(
+        result,
+        isA<Err<void>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<StorageFailure>(),
+        ),
+      );
+    });
+  });
+
   group('mapDioException', () {
     test('timeouts map to TimeoutFailure', () {
       for (final type in [

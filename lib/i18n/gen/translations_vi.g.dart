@@ -14,8 +14,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   ///
   /// Usage:
   /// final t = Translations.of(context);
-  static Translations of(BuildContext context) =>
-      InheritedLocaleData.of<AppLocale, Translations>(context).translations;
+  static Translations of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context).translations;
 
   /// You can call this constructor and build your own translation instance of this locale.
   /// Constructing via the enum [AppLocale.build] is preferred.
@@ -24,10 +23,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
     TranslationMetadata<AppLocale, Translations>? meta,
-  }) : assert(
-         overrides == null,
-         'Set "translation_overrides: true" in order to enable this feature.',
-       ),
+  }) : assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
        _meta =
            meta ??
            TranslationMetadata(
@@ -44,9 +40,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
   late final Translations _root = this; // ignore: unused_field
 
-  Translations $copyWith({
-    TranslationMetadata<AppLocale, Translations>? meta,
-  }) => Translations(meta: meta ?? this.$meta);
+  Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 
   // Translations
 
@@ -98,8 +92,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// en: 'No results for "{{query}}"'
   ///
   /// vi: 'Không tìm thấy kết quả cho "{{query}}"'
-  String no_results({required Object query}) =>
-      'Không tìm thấy kết quả cho "${query}"';
+  String no_results({required Object query}) => 'Không tìm thấy kết quả cho "${query}"';
 
   /// en: 'Theme mode'
   ///
@@ -144,8 +137,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   /// en: 'Version {{version}} ({{build}})'
   ///
   /// vi: 'Phiên bản {{version}} ({{build}})'
-  String app_version({required Object version, required Object build}) =>
-      'Phiên bản ${version} (${build})';
+  String app_version({required Object version, required Object build}) => 'Phiên bản ${version} (${build})';
 
   /// en: 'No notifications'
   ///
@@ -221,4 +213,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   ///
   /// vi: 'Không thể lưu dữ liệu trên thiết bị'
   String get storage_error => 'Không thể lưu dữ liệu trên thiết bị';
+
+  /// en: 'No data'
+  ///
+  /// vi: 'Không có dữ liệu'
+  String get no_data => 'Không có dữ liệu';
 }

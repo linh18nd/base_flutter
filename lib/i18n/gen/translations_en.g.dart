@@ -11,8 +11,7 @@ import 'package:slang/generated.dart';
 import 'translations.g.dart';
 
 // Path: <root>
-class TranslationsEn extends Translations
-    with BaseTranslations<AppLocale, Translations> {
+class TranslationsEn extends Translations with BaseTranslations<AppLocale, Translations> {
   /// You can call this constructor and build your own translation instance of this locale.
   /// Constructing via the enum [AppLocale.build] is preferred.
   TranslationsEn({
@@ -20,10 +19,7 @@ class TranslationsEn extends Translations
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
     TranslationMetadata<AppLocale, Translations>? meta,
-  }) : assert(
-         overrides == null,
-         'Set "translation_overrides: true" in order to enable this feature.',
-       ),
+  }) : assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
        _meta =
            meta ??
            TranslationMetadata(
@@ -32,10 +28,7 @@ class TranslationsEn extends Translations
              cardinalResolver: cardinalResolver,
              ordinalResolver: ordinalResolver,
            ),
-       super(
-         cardinalResolver: cardinalResolver,
-         ordinalResolver: ordinalResolver,
-       );
+       super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
 
   /// Metadata for the translations of <en>.
   final TranslationMetadata<AppLocale, Translations> _meta;
@@ -45,9 +38,7 @@ class TranslationsEn extends Translations
   late final TranslationsEn _root = this; // ignore: unused_field
 
   @override
-  TranslationsEn $copyWith({
-    TranslationMetadata<AppLocale, Translations>? meta,
-  }) => TranslationsEn(meta: meta ?? this.$meta);
+  TranslationsEn $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsEn(meta: meta ?? this.$meta);
 
   // Translations
   @override
@@ -87,8 +78,7 @@ class TranslationsEn extends Translations
   @override
   String get app_info => 'App info';
   @override
-  String app_version({required Object version, required Object build}) =>
-      'Version ${version} (${build})';
+  String app_version({required Object version, required Object build}) => 'Version ${version} (${build})';
   @override
   String get no_notifications => 'No notifications';
   @override
@@ -100,8 +90,7 @@ class TranslationsEn extends Translations
   @override
   String get update_available => 'Update available';
   @override
-  String get update_available_message =>
-      'A new version of the app is available';
+  String get update_available_message => 'A new version of the app is available';
   @override
   String get retry => 'Retry';
   @override
@@ -120,4 +109,6 @@ class TranslationsEn extends Translations
   String get unauthorized => 'Your session has expired';
   @override
   String get storage_error => 'Could not save data on this device';
+  @override
+  String get no_data => 'No data';
 }

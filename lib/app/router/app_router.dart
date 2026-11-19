@@ -1,13 +1,13 @@
 import 'package:base_flutter/app/di/injection.dart';
 import 'package:base_flutter/app/router/main_shell.dart';
 import 'package:base_flutter/app/router/routes.dart';
+import 'package:base_flutter/app/splash/splash_page.dart';
 import 'package:base_flutter/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:base_flutter/features/posts/presentation/bloc/post_search_bloc.dart';
 import 'package:base_flutter/features/posts/presentation/cubit/posts_cubit.dart';
 import 'package:base_flutter/features/posts/presentation/pages/post_search_page.dart';
 import 'package:base_flutter/features/posts/presentation/pages/posts_page.dart';
 import 'package:base_flutter/features/settings/presentation/pages/settings_page.dart';
-import 'package:base_flutter/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';

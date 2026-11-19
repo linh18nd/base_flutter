@@ -3,10 +3,12 @@ import 'package:base_flutter/core/error/result.dart';
 import 'package:base_flutter/core/logger/app_logger.dart';
 import 'package:dio/dio.dart';
 
-/// Runs [action] and converts any thrown error into a typed [Failure].
+/// Wraps a **remote** call (Dio/retrofit) and converts any thrown error into
+/// a typed [Failure].
 ///
-/// Repository implementations wrap every data source call with this, so no
-/// exception ever leaves the data layer.
+/// Repository implementations wrap every remote data source call with this,
+/// so no exception ever leaves the data layer. For local storage use
+/// [guardStorage].
 Future<Result<T>> guard<T>(Future<T> Function() action) async {
   try {
     return Ok(await action());
@@ -16,18 +18,29 @@ Future<Result<T>> guard<T>(Future<T> Function() action) async {
       appLogger.w('Request failed: $failure', error: e, stackTrace: stackTrace);
     }
     return Err(failure);
-    // Generated JSON parsing (json_serializable/retrofit) throws TypeError
-    // when the response shape is wrong; report it as a ParsingFailure.
-    // ignore: avoid_catching_errors
-  } on TypeError catch (e, stackTrace) {
-    appLogger.e('Unexpected data shape', error: e, stackTrace: stackTrace);
-    return Err(ParsingFailure(cause: e));
   } on FormatException catch (e, stackTrace) {
     appLogger.e('Unexpected data format', error: e, stackTrace: stackTrace);
     return Err(ParsingFailure(cause: e));
   } on Object catch (e, stackTrace) {
+    // Generated JSON parsing (json_serializable/retrofit) throws TypeError
+    // when the response shape is wrong; report it as a ParsingFailure.
+    if (e is TypeError) {
+      appLogger.e('Unexpected data shape', error: e, stackTrace: stackTrace);
+      return Err(ParsingFailure(cause: e));
+    }
     appLogger.e('Unexpected error', error: e, stackTrace: stackTrace);
     return Err(UnknownFailure(cause: e));
+  }
+}
+
+/// Wraps a **local** read/write (shared preferences, secure storage,
+/// database, in-memory store). Any error becomes a [StorageFailure].
+Future<Result<T>> guardStorage<T>(Future<T> Function() action) async {
+  try {
+    return Ok(await action());
+  } on Object catch (e, stackTrace) {
+    appLogger.e('Local storage failed', error: e, stackTrace: stackTrace);
+    return Err(StorageFailure(cause: e));
   }
 }
 

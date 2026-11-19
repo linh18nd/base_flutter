@@ -66,6 +66,42 @@
         "--flavor",
         "prod"
       ]
+    },
+    {
+      "name": "Dev + env/dev.json (debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "dev",
+        "--dart-define-from-file=env/dev.json"
+      ]
+    },
+    {
+      "name": "Stag + env/stag.json (debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "stag",
+        "--dart-define-from-file=env/stag.json"
+      ]
+    },
+    {
+      "name": "Prod + env/prod.json (debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "prod",
+        "--dart-define-from-file=env/prod.json"
+      ]
     }
   ]
 }

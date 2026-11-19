@@ -32,5 +32,6 @@
   "requestCancelled": "Yêu cầu đã bị hủy",
   "connectionError": "Lỗi kết nối, vui lòng kiểm tra internet",
   "unauthorized": "Phiên đăng nhập đã hết hạn",
-  "storageError": "Không thể lưu dữ liệu trên thiết bị"
+  "storageError": "Không thể lưu dữ liệu trên thiết bị",
+  "noData": "Không có dữ liệu"
 }

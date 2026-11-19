@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
     final t = context.t;
     final appInfo = context.read<AppInfo>();
     final cubit = context.read<SettingsCubit>();
-    final settings = context.watch<SettingsCubit>().state;
+    final settings = context.watch<SettingsCubit>().state.settings;
     final currentLanguage =
         settings.languageCode ??
         TranslationProvider.of(context).flutterLocale.languageCode;

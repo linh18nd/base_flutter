@@ -39,19 +39,19 @@ class _AppState extends State<App> {
           ),
           BlocProvider(create: (_) => getIt<NotificationsCubit>()),
         ],
-        child: BlocConsumer<SettingsCubit, AppSettings>(
+        child: BlocConsumer<SettingsCubit, SettingsState>(
           listenWhen: (previous, current) =>
-              previous.languageCode != current.languageCode,
-          listener: (_, settings) async {
-            final code = settings.languageCode;
+              previous.settings.languageCode != current.settings.languageCode,
+          listener: (_, state) async {
+            final code = state.settings.languageCode;
             if (code != null) await LocaleSettings.setLocaleRaw(code);
           },
-          builder: (context, settings) => MaterialApp.router(
+          builder: (context, state) => MaterialApp.router(
             onGenerateTitle: (context) => context.t.app_name,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            themeMode: switch (settings.themeMode) {
+            themeMode: switch (state.settings.themeMode) {
               AppThemeMode.system => ThemeMode.system,
               AppThemeMode.light => ThemeMode.light,
               AppThemeMode.dark => ThemeMode.dark,

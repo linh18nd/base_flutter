@@ -1,7 +1,11 @@
 import 'package:base_flutter/features/notifications/data/datasources/notification_local_data_source.dart';
+import 'package:base_flutter/features/notifications/data/models/notification_model.dart';
 import 'package:base_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:base_flutter/features/notifications/domain/entities/app_notification.dart';
-import 'package:base_flutter/features/notifications/domain/usecases/notification_usecases.dart';
+import 'package:base_flutter/features/notifications/domain/usecases/clear_notifications.dart';
+import 'package:base_flutter/features/notifications/domain/usecases/mark_notification_as_read.dart';
+import 'package:base_flutter/features/notifications/domain/usecases/remove_notification.dart';
+import 'package:base_flutter/features/notifications/domain/usecases/watch_notifications.dart';
 import 'package:base_flutter/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,7 +15,7 @@ void main() {
   late NotificationLocalDataSource source;
   late NotificationsCubit cubit;
 
-  AppNotification item(String id) => AppNotification(
+  NotificationModel item(String id) => NotificationModel(
     id: id,
     title: 'Title $id',
     message: 'Message $id',
@@ -24,7 +28,7 @@ void main() {
     final repository = NotificationRepositoryImpl(source);
     cubit = NotificationsCubit(
       watchNotifications: WatchNotifications(repository),
-      markAsRead: MarkNotificationAsRead(repository),
+      markNotificationAsRead: MarkNotificationAsRead(repository),
       removeNotification: RemoveNotification(repository),
       clearNotifications: ClearNotifications(repository),
     );
