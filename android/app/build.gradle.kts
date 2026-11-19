@@ -6,7 +6,8 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
+    // Kotlin uses AGP built-in Kotlin (android.builtInKotlin=true); do not apply KGP.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -32,6 +33,14 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Patrol E2E tests (patrol_test/), see https://patrol.leancode.co
+        testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+    }
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     // AGP 9 disables resValues by default; flavors below use resValue for app_name.
@@ -95,4 +104,15 @@ android {
 
 flutter {
     source = "../.."
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+dependencies {
+    // Runs each Patrol test in isolation (see testOptions above).
+    androidTestUtil("androidx.test:orchestrator:1.6.1")
 }

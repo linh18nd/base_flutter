@@ -5,6 +5,7 @@ import 'package:base_flutter/core/pagination/paged_state.dart';
 import 'package:base_flutter/core/widgets/paged_list_view.dart';
 import 'package:base_flutter/features/posts/domain/entities/post.dart';
 import 'package:base_flutter/features/posts/presentation/cubit/posts_cubit.dart';
+import 'package:base_flutter/features/posts/presentation/posts_keys.dart';
 import 'package:base_flutter/features/posts/presentation/widgets/post_tile.dart';
 import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +35,7 @@ class _PostsPageState extends State<PostsPage> {
         title: Text(t.home),
         actions: [
           IconButton(
+            key: PostsKeys.searchButton,
             icon: const Icon(Icons.search),
             tooltip: t.search,
             onPressed: () => context.go(Routes.search),
@@ -46,7 +48,8 @@ class _PostsPageState extends State<PostsPage> {
           onRefresh: cubit.refresh,
           onLoadMore: cubit.loadMore,
           emptyMessage: t.no_posts_loaded,
-          itemBuilder: (_, post) => PostTile(post: post),
+          itemBuilder: (_, post) =>
+              PostTile(key: PostsKeys.postTile(post.id), post: post),
         ),
       ),
     );

@@ -5,23 +5,28 @@ FVM     ?= fvm
 FLUTTER := $(FVM) flutter
 DART    := $(FVM) dart
 MASON   := $(DART) pub global run mason_cli:mason
+PATROL  := PATROL_FLUTTER_COMMAND="$(FLUTTER)" $(DART) pub global run patrol_cli:main
 FLAVOR  ?= dev
 ENV_FILE = env/$(FLAVOR).json
+E2E_TARGET ?= patrol_test
 # Hand-written Dart files only; generated code keeps its generator's format.
-SRC_FILES = $(shell find lib test -name '*.dart' ! -path 'lib/i18n/gen/*' \
-	! -name '*.g.dart' ! -name '*.freezed.dart')
+SRC_FILES = $(shell find lib test patrol_test -name '*.dart' \
+	! -path 'lib/i18n/gen/*' ! -name '*.g.dart' ! -name '*.freezed.dart' \
+	! -name 'test_bundle.dart')
 
 .DEFAULT_GOAL := help
-.PHONY: help setup gen watch run test analyze format check feature shared clean
+.PHONY: help setup gen watch run test e2e e2e-dev analyze format check \
+	feature shared clean
 
 help: ## Show available commands
-	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-9s\033[0m %s\n", $$1, $$2}'
 
 setup: ## First-time setup: Flutter, packages, mason bricks, generated code
 	$(FVM) install
 	$(FLUTTER) pub get
 	$(DART) pub global activate mason_cli
+	$(DART) pub global activate patrol_cli
 	$(MASON) get
 	$(MAKE) gen
 
@@ -36,8 +41,14 @@ run: ## Run the app: make run [FLAVOR=dev|stag|prod]
 	$(FLUTTER) run --flavor $(FLAVOR) \
 		$(if $(wildcard $(ENV_FILE)),--dart-define-from-file=$(ENV_FILE),)
 
-test: ## Run all tests
+test: ## Run unit, widget and architecture tests
 	$(FLUTTER) test
+
+e2e: ## E2E tests on a simulator/emulator: make e2e [DEVICE=<id|name>]
+	$(PATROL) test --target $(E2E_TARGET) $(if $(DEVICE),--device "$(DEVICE)",)
+
+e2e-dev: ## E2E with hot restart while writing a test: make e2e-dev E2E_TARGET=patrol_test/x_test.dart
+	$(PATROL) develop --target $(E2E_TARGET) $(if $(DEVICE),--device "$(DEVICE)",)
 
 analyze: ## Static analysis
 	$(FLUTTER) analyze

@@ -29,6 +29,8 @@ Mở bằng VS Code: cài các extension được gợi ý, chọn cấu hình c
 | `make shared name=users entity=user` | Sinh một module nghiệp vụ dùng chung trong `lib/shared/` |
 | `make check` | Kiểm tra format, analyze, test, nên chạy trước khi commit |
 | `make test` / `make analyze` / `make format` | Chạy riêng từng bước |
+| `make e2e [DEVICE=<id>]` | Chạy toàn bộ E2E (Patrol) trên simulator/emulator đang mở |
+| `make e2e-dev E2E_TARGET=patrol_test/x_test.dart` | Chạy một file E2E có hot restart, dùng khi đang viết test |
 
 Gõ `make` để xem toàn bộ danh sách. Không dùng `make` được (Windows) thì mở `Makefile`, mỗi lệnh chỉ là vài dòng `fvm flutter …` / `fvm dart …`.
 
@@ -218,6 +220,43 @@ Muốn sửa template thì sửa trong `bricks/feature/__brick__/`.
 - Unit test cho repository (mock data source) và Cubit/Bloc (`blocTest`): xem `test/features/posts/`.
 - Widget test: dùng `tester.pumpApp(widget, providers: [...])` trong `test/helpers/pump_app.dart` với Cubit được mock bằng `MockCubit`. Xem `test/features/posts/presentation/posts_page_test.dart`.
 - Test kiến trúc (`test/architecture/`) quét toàn bộ import trong `lib/` theo quy tắc phụ thuộc. Không cần sửa khi thêm feature; chỉ sửa `import_rules.dart` khi team đổi quy tắc.
+
+## E2E test (Patrol)
+
+Chạy app thật trên simulator/emulator và thao tác như người dùng, bằng [Patrol](https://patrol.leancode.co). Test nằm trong `patrol_test/`, chạy bằng `make e2e` (không chạy trong `make test`).
+
+```
+patrol_test/
+├── app_test.dart          # kịch bản: danh sách + phân trang, tìm kiếm, lỗi + thử lại, cài đặt
+└── support/
+    ├── test_app.dart      # pumpTestApp(): khởi động app thật trên trạng thái sạch
+    └── fake_api.dart      # thay tầng mạng của Dio bằng dữ liệu cố định
+```
+
+Cách hoạt động:
+
+- `pumpTestApp($)` gọi `createApp()` (giống `main()` nhưng không `runApp`), xoá shared preferences và token trước, rồi thay `HttpClientAdapter` của Dio bằng `FakeApi`. Ngoài tầng mạng, mọi thứ là code thật: retrofit, repository, usecase, Cubit/Bloc, UI, router.
+- `FakeApi` trả dữ liệu cố định, ghi lại các request đã gửi (`api.requests`, `api.pageRequests(2)`), và giả lập lỗi được (`failNextPostsRequests = 1`).
+- Test **tìm widget bằng key**. Key để trong file dùng chung giữa app và test: `<feature>/presentation/<feature>_keys.dart`, `app/router/shell_keys.dart`, `FailureView.retryButtonKey`. Phần tử trong danh sách dùng key có tham số, ví dụ `PostsKeys.postTile(id)`.
+
+Viết test mới:
+
+```dart
+patrolTest('mô tả', ($) async {
+  final api = await pumpTestApp($);
+
+  await $(PostsKeys.searchButton).tap();
+  await $(PostsKeys.searchField).enterText('flutter');
+
+  await $(PostsKeys.postTile(10)).waitUntilVisible();
+});
+```
+
+Lưu ý khi chạy:
+
+- Cần `patrol_cli` (`make setup` đã cài) và một simulator/emulator đang mở. Kiểm tra môi trường bằng `fvm dart pub global run patrol_cli:main doctor`.
+- Cấu hình native đã có sẵn: Android (`MainActivityTest.java`, test orchestrator trong `android/app/build.gradle.kts`), iOS (target `RunnerUITests` link `FlutterGeneratedPluginSwiftPackage`, đã thêm vào cả 3 scheme).
+- **Máy có nhiều bản Xcode**: nếu E2E iOS treo với lỗi `unable to connect to "com.apple.instruments…"` / `failed to bless service hub`, nghĩa là `xcode-select` đang trỏ tới một bản Xcode cũ hơn bản đã cài dịch vụ simulator. Chọn bản mới nhất bằng `xcode-select`, hoặc chạy với `DEVELOPER_DIR=/Applications/<Xcode mới>.app/Contents/Developer make e2e`.
 
 ## Chạy app và flavor
 

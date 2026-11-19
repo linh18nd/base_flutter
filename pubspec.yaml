@@ -58,8 +58,19 @@ dev_dependencies:
   very_good_analysis: ^11.0.0
   mocktail: ^1.0.5
   bloc_test: ^10.0.0
+  patrol: ^4.11.0
 
 flutter:
   # Scheme mặc định trên iOS khi không truyền --flavor.
   default-flavor: dev
   uses-material-design: true
+
+# Patrol E2E tests (patrol_test/). Run with `make e2e`.
+patrol:
+  app_name: Base Flutter Dev
+  flavor: dev
+  android:
+    package_name: com.example.base_flutter.dev
+  ios:
+    bundle_id: com.example.baseFlutter.dev
+    app_name: Base Flutter Dev

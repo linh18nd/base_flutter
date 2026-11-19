@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:base_flutter/core/app_info/app_info.dart';
 import 'package:base_flutter/features/settings/domain/entities/app_settings.dart';
 import 'package:base_flutter/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:base_flutter/features/settings/presentation/settings_keys.dart';
 import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -35,16 +36,19 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 children: [
                   RadioListTile(
+                    key: SettingsKeys.themeOption(AppThemeMode.system),
                     value: AppThemeMode.system,
                     title: Text(t.system_mode),
                     secondary: const Icon(Icons.brightness_auto),
                   ),
                   RadioListTile(
+                    key: SettingsKeys.themeOption(AppThemeMode.light),
                     value: AppThemeMode.light,
                     title: Text(t.light_mode),
                     secondary: const Icon(Icons.light_mode),
                   ),
                   RadioListTile(
+                    key: SettingsKeys.themeOption(AppThemeMode.dark),
                     value: AppThemeMode.dark,
                     title: Text(t.dark_mode),
                     secondary: const Icon(Icons.dark_mode),
@@ -62,8 +66,16 @@ class SettingsPage extends StatelessWidget {
               },
               child: Column(
                 children: [
-                  RadioListTile(value: 'vi', title: Text(t.vietnamese)),
-                  RadioListTile(value: 'en', title: Text(t.english)),
+                  RadioListTile(
+                    key: SettingsKeys.languageOption('vi'),
+                    value: 'vi',
+                    title: Text(t.vietnamese),
+                  ),
+                  RadioListTile(
+                    key: SettingsKeys.languageOption('en'),
+                    value: 'en',
+                    title: Text(t.english),
+                  ),
                 ],
               ),
             ),

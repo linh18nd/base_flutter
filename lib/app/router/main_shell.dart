@@ -1,3 +1,4 @@
+import 'package:base_flutter/app/router/shell_keys.dart';
 import 'package:base_flutter/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,11 +30,13 @@ class MainShell extends StatelessWidget {
         ),
         destinations: [
           NavigationDestination(
+            key: ShellKeys.homeTab,
             icon: const Icon(Icons.home_outlined),
             selectedIcon: const Icon(Icons.home),
             label: t.home,
           ),
           NavigationDestination(
+            key: ShellKeys.notificationsTab,
             icon: Badge.count(
               count: unread,
               isLabelVisible: unread > 0,
@@ -47,6 +50,7 @@ class MainShell extends StatelessWidget {
             label: t.notification,
           ),
           NavigationDestination(
+            key: ShellKeys.settingsTab,
             icon: const Icon(Icons.settings_outlined),
             selectedIcon: const Icon(Icons.settings),
             label: t.setting,

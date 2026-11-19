@@ -47,6 +47,9 @@ class MessageView extends StatelessWidget {
 class FailureView extends StatelessWidget {
   const FailureView({required this.message, this.onRetry, super.key});
 
+  /// Used by E2E tests to tap "Retry".
+  static const retryButtonKey = Key('failureView.retryButton');
+
   final String message;
   final VoidCallback? onRetry;
 
@@ -71,6 +74,7 @@ class FailureView extends StatelessWidget {
             if (onRetry != null) ...[
               const SizedBox(height: 16),
               FilledButton.tonal(
+                key: retryButtonKey,
                 onPressed: onRetry,
                 child: Text(context.t.retry),
               ),

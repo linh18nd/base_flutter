@@ -13,8 +13,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 
-/// Initializes everything before the first frame, then runs the app.
+/// Entry point used by `main()`: sets up the binding and global error
+/// handlers, then runs the app.
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -30,6 +32,19 @@ Future<void> bootstrap() async {
     return true;
   };
 
+  runApp(await createApp());
+}
+
+/// Initializes everything the first frame needs (env, DI, settings, locale)
+/// and returns the root widget.
+///
+/// Kept separate from [bootstrap] so E2E tests can build the real app
+/// without `runApp`, and swap a few dependencies through
+/// [overrideDependencies] (called right after normal registration), e.g.
+/// a fake HTTP adapter on `Dio`.
+Future<Widget> createApp({
+  FutureOr<void> Function(GetIt getIt)? overrideDependencies,
+}) async {
   final env = AppEnv.current();
   appLogger.i('Starting $env');
   if (kDebugMode && appFlavor == null) {
@@ -39,7 +54,10 @@ Future<void> bootstrap() async {
   }
 
   Bloc.observer = AppBlocObserver(appLogger);
+  // Several E2E tests may build the app in the same process.
+  await getIt.reset();
   await configureDependencies(env);
+  await overrideDependencies?.call(getIt);
 
   final settings = switch (await getIt<GetSettings>()()) {
     Ok(:final value) => value,
@@ -51,5 +69,5 @@ Future<void> bootstrap() async {
     await LocaleSettings.useDeviceLocale();
   }
 
-  runApp(TranslationProvider(child: App(initialSettings: settings)));
+  return TranslationProvider(child: App(initialSettings: settings));
 }
