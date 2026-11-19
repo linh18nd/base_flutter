@@ -90,5 +90,56 @@ void main() {
         isNotEmpty,
       );
     });
+
+    test('rejects presentation using data or repositories directly', () {
+      for (final import in [
+        'package:base_flutter/features/posts/data/models/post_dto.dart',
+        'package:base_flutter/features/posts/domain/repositories/r.dart',
+        'package:base_flutter/shared/users/data/models/user_dto.dart',
+        'package:base_flutter/shared/users/domain/repositories/r.dart',
+      ]) {
+        expect(
+          importViolations('lib/features/posts/presentation/x.dart', import),
+          isNotEmpty,
+          reason: import,
+        );
+      }
+    });
+
+    test('allows presentation to use usecases and entities', () {
+      for (final import in [
+        'package:base_flutter/features/posts/domain/usecases/get_posts.dart',
+        'package:base_flutter/features/posts/domain/entities/post.dart',
+        'package:base_flutter/shared/users/domain/entities/user.dart',
+      ]) {
+        expect(
+          importViolations('lib/features/posts/presentation/x.dart', import),
+          isEmpty,
+          reason: import,
+        );
+      }
+    });
+
+    test('allows any domain to use shared domain', () {
+      const user = 'package:base_flutter/shared/users/domain/entities/u.dart';
+      expect(
+        importViolations('lib/features/orders/domain/entities/o.dart', user),
+        isEmpty,
+      );
+      expect(
+        importViolations('lib/shared/carts/domain/entities/c.dart', user),
+        isEmpty,
+      );
+    });
+
+    test("rejects a domain using another feature's domain", () {
+      expect(
+        importViolations(
+          'lib/features/orders/domain/entities/o.dart',
+          'package:base_flutter/features/posts/domain/entities/post.dart',
+        ),
+        isNotEmpty,
+      );
+    });
   });
 }

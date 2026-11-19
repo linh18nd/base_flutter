@@ -105,9 +105,9 @@ presentation ──▶ domain ◀── data
 ```
 
 - `core/` chỉ import `core/` (và `i18n/`). `shared/` chỉ import `core/` và `shared/`. Feature import được `core/`, `shared/` và `app/router/routes.dart` (để điều hướng), **không** import feature khác.
-- `domain` không import Flutter, Dio, slang hay bất kỳ thứ gì của `data`/`presentation`. Ngoại lệ duy nhất là `freezed_annotation` (package Dart thuần) để entity bất biến và có `copyWith`.
+- `domain` không import Flutter, Dio, slang hay bất kỳ thứ gì của `data`/`presentation`. Ngoại lệ duy nhất là `freezed_annotation` (package Dart thuần) để entity bất biến và có `copyWith`. Domain được dùng entity/interface trong domain của **bất kỳ module `shared/` nào** (ví dụ `Order` có trường `User`), nhưng không dùng domain của feature khác.
 - `data` cài đặt interface của `domain`; DTO/model đổi sang entity qua `toEntity()`. Data source không dùng thẳng entity.
-- `presentation` chỉ gọi usecase, không gọi thẳng repository hay data source.
+- `presentation` chỉ gọi usecase (và dùng entity), không import `data/` hay interface repository, kể cả của `shared/`.
 - Feature không import lẫn nhau. Nghiệp vụ dùng chung đưa vào `shared/`, hạ tầng kỹ thuật đưa vào `core/` (xem mục "Logic dùng chung" bên dưới).
 - Các quy tắc này được **kiểm tra tự động** bởi `test/architecture/architecture_test.dart` (chạy trong `make test` / `make check`). Import sai chỗ sẽ làm test fail kèm thông báo cách sửa.
 - Page không gọi `getIt`. Bloc/Cubit theo màn hình được tạo trong `app/router/app_router.dart`; bloc dùng toàn app được tạo trong `app/app.dart`.
@@ -122,7 +122,7 @@ presentation ──▶ domain ◀── data
 | Repository | Interface `<Entity>Repository`, cài đặt `<Entity>RepositoryImpl`. Hàm có thể lỗi trả `Future<Result<T>>`; riêng hàm theo dõi dữ liệu (`watch…`) trả `Stream` | `PostRepository`, `NotificationRepository` |
 | Usecase | **Mỗi usecase một file**, tên là động từ, gọi bằng `call()`. Được phép chỉ chuyển tiếp một dòng sang repository; khi có logic nghiệp vụ thì đặt vào đây, không viết logic giả cho đủ | `GetPosts` → `get_posts.dart` |
 | Cubit / Bloc | `<Feature>Cubit` / `<Tên>Bloc`, **state (và event) tách file riêng bằng `part`** | `posts_cubit.dart` + `posts_state.dart` |
-| State | `@freezed sealed` với các trạng thái `initial / loading / loaded / failure` | `PostsState.loaded(posts)` |
+| State | `@freezed sealed` với các trạng thái `initial / loading / loaded / failure`. **Danh sách phân trang** không tự viết state mà dùng `PagedState<T>` có sẵn (xem mục "Danh sách phân trang") | `PostSearchState.loaded(...)`, `PagedState<Post>` |
 | Test | Cùng đường dẫn với file được test, thêm `_test` | `test/features/posts/presentation/posts_cubit_test.dart` |
 
 ## Luồng dữ liệu và xử lý lỗi
@@ -179,6 +179,14 @@ class OrdersCubit extends PaginatedCubit<Order> {
 ```
 
 Phía UI dùng `PagedListView` với state `PagedState<Order>`. Ví dụ đầy đủ ở `features/posts/presentation/`.
+
+Lỗi được tách theo hành động để UI phản hồi đúng chỗ:
+
+| Trường | Khi nào | `PagedListView` hiển thị |
+|---|---|---|
+| `failure` | Trang đầu tiên lỗi | Màn lỗi toàn trang, nút thử lại gọi `refresh` |
+| `loadMoreFailure` | Tải trang tiếp theo lỗi | Footer cuối danh sách, nút thử lại gọi `loadMore`; tạm dừng tự tải khi cuộn |
+| `refreshFailure` | Kéo để tải lại lỗi khi đã có dữ liệu | Snackbar, danh sách giữ nguyên và vẫn cuộn tải thêm bình thường |
 
 ## Thêm một feature mới
 

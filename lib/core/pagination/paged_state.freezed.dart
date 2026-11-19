@@ -16,9 +16,13 @@ T _$identity<T>(T value) => value;
 mixin _$PagedState<T> {
 
  PagedStatus get status; List<T> get items;/// Last page loaded successfully.
- int get page; bool get hasReachedEnd; bool get isLoadingMore;/// Error of the last request. With [PagedStatus.success] it means
-/// loading the next page failed while the current items stay visible.
- Failure? get failure;
+ int get page; bool get hasReachedEnd; bool get isLoadingMore;/// First page failed ([PagedStatus.failure]): full-screen error,
+/// retry with `refresh`.
+ Failure? get failure;/// Next page failed: items stay visible, footer offers retry with
+/// `loadMore`. Load-more on scroll pauses until then.
+ Failure? get loadMoreFailure;/// Pull to refresh failed while items were shown: items stay visible,
+/// the UI shows a one-off message (snackbar).
+ Failure? get refreshFailure;
 /// Create a copy of PagedState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +34,20 @@ $PagedStateCopyWith<T, PagedState<T>> get copyWith => _$PagedStateCopyWithImpl<T
 @override
 bool operator ==(Object other) {
   final _this = this as PagedState<T>;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PagedState<T>&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.page, _this.page) || other.page == _this.page)&&(identical(other.hasReachedEnd, _this.hasReachedEnd) || other.hasReachedEnd == _this.hasReachedEnd)&&(identical(other.isLoadingMore, _this.isLoadingMore) || other.isLoadingMore == _this.isLoadingMore)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PagedState<T>&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.page, _this.page) || other.page == _this.page)&&(identical(other.hasReachedEnd, _this.hasReachedEnd) || other.hasReachedEnd == _this.hasReachedEnd)&&(identical(other.isLoadingMore, _this.isLoadingMore) || other.isLoadingMore == _this.isLoadingMore)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.loadMoreFailure, _this.loadMoreFailure) || other.loadMoreFailure == _this.loadMoreFailure)&&(identical(other.refreshFailure, _this.refreshFailure) || other.refreshFailure == _this.refreshFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PagedState<T>;
-  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.page,_this.hasReachedEnd,_this.isLoadingMore,_this.failure);
+  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.items),_this.page,_this.hasReachedEnd,_this.isLoadingMore,_this.failure,_this.loadMoreFailure,_this.refreshFailure);
 }
 
 @override
 String toString() {
   final _this = this as PagedState<T>;
-  return 'PagedState<$T>(status: ${_this.status}, items: ${_this.items}, page: ${_this.page}, hasReachedEnd: ${_this.hasReachedEnd}, isLoadingMore: ${_this.isLoadingMore}, failure: ${_this.failure})';
+  return 'PagedState<$T>(status: ${_this.status}, items: ${_this.items}, page: ${_this.page}, hasReachedEnd: ${_this.hasReachedEnd}, isLoadingMore: ${_this.isLoadingMore}, failure: ${_this.failure}, loadMoreFailure: ${_this.loadMoreFailure}, refreshFailure: ${_this.refreshFailure})';
 }
 
 
@@ -54,7 +58,7 @@ abstract mixin class $PagedStateCopyWith<T,$Res>  {
   factory $PagedStateCopyWith(PagedState<T> value, $Res Function(PagedState<T>) _then) = _$PagedStateCopyWithImpl;
 @useResult
 $Res call({
- PagedStatus status, List<T> items, int page, bool hasReachedEnd, bool isLoadingMore, Failure? failure
+ PagedStatus status, List<T> items, int page, bool hasReachedEnd, bool isLoadingMore, Failure? failure, Failure? loadMoreFailure, Failure? refreshFailure
 });
 
 
@@ -71,7 +75,7 @@ class _$PagedStateCopyWithImpl<T,$Res>
 
 /// Create a copy of PagedState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? page = null,Object? hasReachedEnd = null,Object? isLoadingMore = null,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? items = null,Object? page = null,Object? hasReachedEnd = null,Object? isLoadingMore = null,Object? failure = freezed,Object? loadMoreFailure = freezed,Object? refreshFailure = freezed,}) {
   return _then(PagedState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PagedStatus,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
@@ -79,6 +83,8 @@ as List<T>,page: null == page ? _self.page : page // ignore: cast_nullable_to_no
 as int,hasReachedEnd: null == hasReachedEnd ? _self.hasReachedEnd : hasReachedEnd // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,loadMoreFailure: freezed == loadMoreFailure ? _self.loadMoreFailure : loadMoreFailure // ignore: cast_nullable_to_non_nullable
+as Failure?,refreshFailure: freezed == refreshFailure ? _self.refreshFailure : refreshFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -164,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure,  Failure? loadMoreFailure,  Failure? refreshFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PagedState() when $default != null:
-return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure);case _:
+return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure,_that.loadMoreFailure,_that.refreshFailure);case _:
   return orElse();
 
 }
@@ -185,10 +191,10 @@ return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.is
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure,  Failure? loadMoreFailure,  Failure? refreshFailure)  $default,) {final _that = this;
 switch (_that) {
 case _PagedState():
-return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure);case _:
+return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure,_that.loadMoreFailure,_that.refreshFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +211,10 @@ return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.is
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PagedStatus status,  List<T> items,  int page,  bool hasReachedEnd,  bool isLoadingMore,  Failure? failure,  Failure? loadMoreFailure,  Failure? refreshFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _PagedState() when $default != null:
-return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure);case _:
+return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.isLoadingMore,_that.failure,_that.loadMoreFailure,_that.refreshFailure);case _:
   return null;
 
 }
@@ -220,7 +226,7 @@ return $default(_that.status,_that.items,_that.page,_that.hasReachedEnd,_that.is
 
 
 class _PagedState<T> implements PagedState<T> {
-  const _PagedState({this.status = PagedStatus.initial,  List<T> items = const [], this.page = 0, this.hasReachedEnd = false, this.isLoadingMore = false, this.failure}): _items = items;
+  const _PagedState({this.status = PagedStatus.initial,  List<T> items = const [], this.page = 0, this.hasReachedEnd = false, this.isLoadingMore = false, this.failure, this.loadMoreFailure, this.refreshFailure}): _items = items;
   
 
 @override@JsonKey() final  PagedStatus status;
@@ -235,9 +241,15 @@ class _PagedState<T> implements PagedState<T> {
 @override@JsonKey() final  int page;
 @override@JsonKey() final  bool hasReachedEnd;
 @override@JsonKey() final  bool isLoadingMore;
-/// Error of the last request. With [PagedStatus.success] it means
-/// loading the next page failed while the current items stay visible.
+/// First page failed ([PagedStatus.failure]): full-screen error,
+/// retry with `refresh`.
 @override final  Failure? failure;
+/// Next page failed: items stay visible, footer offers retry with
+/// `loadMore`. Load-more on scroll pauses until then.
+@override final  Failure? loadMoreFailure;
+/// Pull to refresh failed while items were shown: items stay visible,
+/// the UI shows a one-off message (snackbar).
+@override final  Failure? refreshFailure;
 
 /// Create a copy of PagedState
 /// with the given fields replaced by the non-null parameter values.
@@ -249,18 +261,18 @@ _$PagedStateCopyWith<T, _PagedState<T>> get copyWith => __$PagedStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PagedState<T>&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasReachedEnd, hasReachedEnd) || other.hasReachedEnd == hasReachedEnd)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PagedState<T>&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasReachedEnd, hasReachedEnd) || other.hasReachedEnd == hasReachedEnd)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.loadMoreFailure, loadMoreFailure) || other.loadMoreFailure == loadMoreFailure)&&(identical(other.refreshFailure, refreshFailure) || other.refreshFailure == refreshFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),page,hasReachedEnd,isLoadingMore,failure);
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_items),page,hasReachedEnd,isLoadingMore,failure,loadMoreFailure,refreshFailure);
 }
 
 @override
 String toString() {
-    return 'PagedState<$T>(status: $status, items: $items, page: $page, hasReachedEnd: $hasReachedEnd, isLoadingMore: $isLoadingMore, failure: $failure)';
+    return 'PagedState<$T>(status: $status, items: $items, page: $page, hasReachedEnd: $hasReachedEnd, isLoadingMore: $isLoadingMore, failure: $failure, loadMoreFailure: $loadMoreFailure, refreshFailure: $refreshFailure)';
 }
 
 
@@ -271,7 +283,7 @@ abstract mixin class _$PagedStateCopyWith<T,$Res> implements $PagedStateCopyWith
   factory _$PagedStateCopyWith(_PagedState<T> value, $Res Function(_PagedState<T>) _then) = __$PagedStateCopyWithImpl;
 @override @useResult
 $Res call({
- PagedStatus status, List<T> items, int page, bool hasReachedEnd, bool isLoadingMore, Failure? failure
+ PagedStatus status, List<T> items, int page, bool hasReachedEnd, bool isLoadingMore, Failure? failure, Failure? loadMoreFailure, Failure? refreshFailure
 });
 
 
@@ -288,7 +300,7 @@ class __$PagedStateCopyWithImpl<T,$Res>
 
 /// Create a copy of PagedState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? page = null,Object? hasReachedEnd = null,Object? isLoadingMore = null,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? items = null,Object? page = null,Object? hasReachedEnd = null,Object? isLoadingMore = null,Object? failure = freezed,Object? loadMoreFailure = freezed,Object? refreshFailure = freezed,}) {
   return _then(_PagedState<T>(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PagedStatus,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
@@ -296,6 +308,8 @@ as List<T>,page: null == page ? _self.page : page // ignore: cast_nullable_to_no
 as int,hasReachedEnd: null == hasReachedEnd ? _self.hasReachedEnd : hasReachedEnd // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,loadMoreFailure: freezed == loadMoreFailure ? _self.loadMoreFailure : loadMoreFailure // ignore: cast_nullable_to_non_nullable
+as Failure?,refreshFailure: freezed == refreshFailure ? _self.refreshFailure : refreshFailure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }

@@ -29,8 +29,16 @@ abstract class PagedState<T> with _$PagedState<T> {
     @Default(false) bool hasReachedEnd,
     @Default(false) bool isLoadingMore,
 
-    /// Error of the last request. With [PagedStatus.success] it means
-    /// loading the next page failed while the current items stay visible.
+    /// First page failed ([PagedStatus.failure]): full-screen error,
+    /// retry with `refresh`.
     Failure? failure,
+
+    /// Next page failed: items stay visible, footer offers retry with
+    /// `loadMore`. Load-more on scroll pauses until then.
+    Failure? loadMoreFailure,
+
+    /// Pull to refresh failed while items were shown: items stay visible,
+    /// the UI shows a one-off message (snackbar).
+    Failure? refreshFailure,
   }) = _PagedState<T>;
 }

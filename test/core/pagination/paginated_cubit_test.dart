@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _NumbersCubit extends PaginatedCubit<int> {
   _NumbersCubit({this.failOnPage}) : super(pageSize: 2);
 
-  final int? failOnPage;
+  int? failOnPage;
   final requestedPages = <int>[];
 
   /// When set, fetchPage waits for it before answering.
@@ -101,10 +101,45 @@ void main() {
         status: PagedStatus.success,
         items: [1, 2],
         page: 1,
-        failure: failure,
+        loadMoreFailure: failure,
       ),
     ],
   );
+
+  test('a failed refresh keeps the items and reports refreshFailure, '
+      'without blocking load more', () async {
+    final cubit = _NumbersCubit();
+    await cubit.refresh();
+
+    cubit.failOnPage = 1;
+    await cubit.refresh();
+
+    expect(cubit.state.items, [1, 2]);
+    expect(cubit.state.refreshFailure, isA<NetworkFailure>());
+    expect(cubit.state.loadMoreFailure, isNull);
+    expect(cubit.state.failure, isNull);
+
+    await cubit.loadMore();
+    expect(cubit.state.items, [1, 2, 3, 4]);
+    await cubit.close();
+  });
+
+  test('a failed refresh during load more does not leave it stuck', () async {
+    final cubit = _NumbersCubit();
+    await cubit.refresh();
+
+    cubit
+      ..gate = Completer<void>()
+      ..failOnPage = 1;
+    final loadingMore = cubit.loadMore(); // page 2, dropped by the refresh
+    final refreshing = cubit.refresh(); // page 1, fails
+    cubit.gate!.complete();
+    await Future.wait([loadingMore, refreshing]);
+
+    expect(cubit.state.isLoadingMore, isFalse);
+    expect(cubit.state.refreshFailure, isA<NetworkFailure>());
+    await cubit.close();
+  });
 
   test('refresh during loadMore drops the stale page', () async {
     final cubit = _NumbersCubit();

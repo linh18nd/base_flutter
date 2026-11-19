@@ -37,6 +37,9 @@ abstract class PaginatedCubit<T> extends Cubit<PagedState<T>> {
     final generation = ++_generation;
     if (state.items.isEmpty) {
       emit(PagedState<T>(status: PagedStatus.loading));
+    } else if (state.refreshFailure != null) {
+      // Clear it so a repeated failure is reported again.
+      emit(state.copyWith(refreshFailure: null));
     }
 
     final result = await fetchPage(firstPage);
@@ -56,7 +59,9 @@ abstract class PaginatedCubit<T> extends Cubit<PagedState<T>> {
         emit(
           state.items.isEmpty
               ? PagedState<T>(status: PagedStatus.failure, failure: failure)
-              : state.copyWith(failure: failure),
+              // Keep the items; a load-more cancelled by this refresh must
+              // not stay "in progress".
+              : state.copyWith(refreshFailure: failure, isLoadingMore: false),
         );
     }
   }
@@ -72,7 +77,7 @@ abstract class PaginatedCubit<T> extends Cubit<PagedState<T>> {
 
     final generation = _generation;
     final nextPage = state.page + 1;
-    emit(state.copyWith(isLoadingMore: true, failure: null));
+    emit(state.copyWith(isLoadingMore: true, loadMoreFailure: null));
 
     final result = await fetchPage(nextPage);
     if (generation != _generation || isClosed) return;
@@ -88,7 +93,7 @@ abstract class PaginatedCubit<T> extends Cubit<PagedState<T>> {
           ),
         );
       case Err(:final failure):
-        emit(state.copyWith(isLoadingMore: false, failure: failure));
+        emit(state.copyWith(isLoadingMore: false, loadMoreFailure: failure));
     }
   }
 }

@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 
 /// List UI for a [PagedState]: loader, error, empty view, pull to refresh,
 /// load-more on scroll and a footer for the next page's loader or error.
+/// A failed pull to refresh shows a snackbar (needs a `Scaffold` above).
 ///
 /// Pair it with a `PaginatedCubit`:
 /// ```dart
@@ -60,9 +61,22 @@ class _PagedListViewState<T> extends State<PagedListView<T>> {
   @override
   void didUpdateWidget(PagedListView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // A short first page may not fill the screen, so no scroll event would
-    // ever trigger the next page; check again after layout.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadMore());
+    final refreshFailure = widget.state.refreshFailure;
+    final isNewRefreshFailure =
+        refreshFailure != null &&
+        !identical(refreshFailure, oldWidget.state.refreshFailure);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (isNewRefreshFailure) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(refreshFailure.message(context.t))),
+        );
+      }
+      // A short first page may not fill the screen, so no scroll event
+      // would ever trigger the next page; check again after layout.
+      _maybeLoadMore();
+    });
   }
 
   @override
@@ -77,7 +91,7 @@ class _PagedListViewState<T> extends State<PagedListView<T>> {
         !_controller.hasClients ||
         state.hasReachedEnd ||
         state.isLoadingMore ||
-        state.failure != null) {
+        state.loadMoreFailure != null) {
       return;
     }
     if (_controller.position.extentAfter < _loadMoreThreshold) {
@@ -128,7 +142,7 @@ class _PagedListViewState<T> extends State<PagedListView<T>> {
   }
 
   bool _hasFooter(PagedState<T> state) =>
-      state.isLoadingMore || state.failure != null;
+      state.isLoadingMore || state.loadMoreFailure != null;
 }
 
 class _Footer extends StatelessWidget {
@@ -139,7 +153,7 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final failure = state.failure;
+    final failure = state.loadMoreFailure;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Center(

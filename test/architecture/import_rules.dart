@@ -10,9 +10,11 @@
 ///   `app/router/routes.dart` (route paths, for navigation) — never another
 ///   feature or the rest of `app/`.
 /// - `domain/` (in a feature or shared module) stays Flutter-free: only
-///   `dart:*`, `freezed_annotation`, `meta`, `core/error/` and its own
-///   module's `domain/`.
+///   `dart:*`, `freezed_annotation`, `meta`, `core/error/`, its own
+///   module's `domain/` and the `domain/` of any `shared/` module.
 /// - `data/` never imports `presentation/`.
+/// - `presentation/` never imports `data/` or repository interfaces
+///   (`domain/repositories/`): it goes through usecases.
 library;
 
 const _pkg = 'package:base_flutter/';
@@ -62,6 +64,17 @@ List<String> importViolations(String file, String import) {
     violations.add('data/ must not import presentation/');
   }
 
+  if (source.subLayer == 'presentation') {
+    if (target.subLayer == 'data') {
+      violations.add('presentation/ must not import data/; use a usecase');
+    }
+    if (target.isRepositoryInterface) {
+      violations.add(
+        'presentation/ must not use repositories directly; use a usecase',
+      );
+    }
+  }
+
   return violations;
 }
 
@@ -71,9 +84,11 @@ bool _isAllowedInDomain(_Location source, String import) {
   if (!import.startsWith(_pkg)) return false;
   final target = _Location.parse(import.substring(_pkg.length));
   if (target.path.startsWith('core/error/')) return true;
-  return target.layer == source.layer &&
-      target.module == source.module &&
-      target.subLayer == 'domain';
+  if (!target.isDomain) return false;
+  // Shared entities (e.g. a `User` inside an `Order`) are the point of
+  // shared/, so any domain may use them.
+  if (target.layer == 'shared') return true;
+  return target.layer == source.layer && target.module == source.module;
 }
 
 /// A path inside `lib/`, split into layer / module / sub-layer.
@@ -100,4 +115,7 @@ class _Location {
   final String? subLayer;
 
   bool get isDomain => subLayer == 'domain';
+
+  bool get isRepositoryInterface =>
+      isDomain && path.contains('/domain/repositories/');
 }
