@@ -1,6 +1,7 @@
 import 'package:base_flutter/core/widgets/status_views.dart';
 import 'package:base_flutter/features/notifications/domain/entities/app_notification.dart';
 import 'package:base_flutter/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:base_flutter/features/notifications/presentation/notifications_keys.dart';
 import 'package:base_flutter/i18n/gen/translations.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,6 +18,7 @@ class NotificationsPage extends StatelessWidget {
         title: Text(t.notification),
         actions: [
           IconButton(
+            key: NotificationsKeys.clearAllButton,
             icon: const Icon(Icons.clear_all),
             tooltip: t.clear_all,
             onPressed: cubit.clearAll,
@@ -68,6 +70,7 @@ class _NotificationCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
+        key: NotificationsKeys.item(notification.id),
         onTap: onTap,
         leading: CircleAvatar(
           backgroundColor: isRead
@@ -90,6 +93,7 @@ class _NotificationCard extends StatelessWidget {
         ),
         subtitle: Text(notification.message),
         trailing: IconButton(
+          key: NotificationsKeys.removeButton(notification.id),
           icon: const Icon(Icons.close),
           onPressed: onRemove,
         ),

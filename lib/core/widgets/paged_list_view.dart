@@ -33,6 +33,9 @@ class PagedListView<T> extends StatefulWidget {
     super.key,
   });
 
+  /// Used by E2E tests to tap "Retry" in the load-more footer.
+  static const loadMoreRetryKey = Key('pagedListView.loadMoreRetryButton');
+
   final PagedState<T> state;
   final Future<void> Function() onRefresh;
   final Future<void> Function() onLoadMore;
@@ -163,7 +166,11 @@ class _Footer extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(failure.message(context.t), textAlign: TextAlign.center),
-                  TextButton(onPressed: onRetry, child: Text(context.t.retry)),
+                  TextButton(
+                    key: PagedListView.loadMoreRetryKey,
+                    onPressed: onRetry,
+                    child: Text(context.t.retry),
+                  ),
                 ],
               ),
       ),

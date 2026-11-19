@@ -11,18 +11,25 @@ import 'fake_api.dart';
 ///
 /// Returns the fake API so tests can tweak it or inspect the requests.
 Future<FakeApi> pumpTestApp(PatrolIntegrationTester $, {FakeApi? api}) async {
-  final fakeApi = api ?? FakeApi();
-
   // Settings and tokens survive between runs on a simulator; start clean so
   // a test never depends on the previous one.
   await SharedPreferencesAsync().clear();
   await const FlutterSecureStorage().deleteAll();
 
+  return await _pump($, api ?? FakeApi());
+}
+
+/// Simulates closing and reopening the app: everything in memory is rebuilt
+/// from scratch, while saved data (settings, tokens) is kept.
+Future<FakeApi> restartTestApp(PatrolIntegrationTester $, {FakeApi? api}) =>
+    _pump($, api ?? FakeApi());
+
+Future<FakeApi> _pump(PatrolIntegrationTester $, FakeApi api) async {
   final app = await createApp(
     overrideDependencies: (getIt) {
-      getIt<Dio>().httpClientAdapter = fakeApi;
+      getIt<Dio>().httpClientAdapter = api;
     },
   );
   await $.pumpWidgetAndSettle(app);
-  return fakeApi;
+  return api;
 }

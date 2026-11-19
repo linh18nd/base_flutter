@@ -21,6 +21,12 @@ class FakeApi implements HttpClientAdapter {
   /// Number of upcoming `/posts` requests that answer 503.
   int failNextPostsRequests = 0;
 
+  /// Pages whose next request answers 503 (each page fails once).
+  final Set<int> failPagesOnce = {};
+
+  /// When true, search requests fail as if the device were offline.
+  bool searchOffline = false;
+
   static String postTitle(int id) =>
       id % 10 == 0 ? 'Flutter tips #$id' : 'Post $id';
 
@@ -45,6 +51,12 @@ class FakeApi implements HttpClientAdapter {
 
     final query = uri.queryParameters['q'];
     if (query != null) {
+      if (searchOffline) {
+        throw DioException.connectionError(
+          requestOptions: options,
+          reason: 'Fake: device is offline',
+        );
+      }
       final q = query.toLowerCase();
       return _json([
         for (final post in all)
@@ -53,6 +65,9 @@ class FakeApi implements HttpClientAdapter {
     }
 
     final page = int.parse(uri.queryParameters['_page'] ?? '1');
+    if (failPagesOnce.remove(page)) {
+      return _json({'message': 'Service unavailable'}, status: 503);
+    }
     final limit = int.parse(uri.queryParameters['_limit'] ?? '$totalPosts');
     return _json(all.skip((page - 1) * limit).take(limit).toList());
   }

@@ -64,4 +64,8 @@ mason-lock.json
 
 # Patrol (generated test bundle, local dart-defines)
 **/test_bundle.dart
+integration_test/patrol_test_bundle.dart
 .patrol.env
+
+# Per-machine Makefile settings (see local.mk.example)
+local.mk

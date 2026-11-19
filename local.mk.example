@@ -1,0 +1,11 @@
+# Per-machine Makefile settings. Copy to `local.mk` (gitignored) and adjust;
+# the Makefile includes it automatically when it exists.
+
+# Xcode used for iOS E2E tests (make e2e) only; other commands
+# keep the Xcode selected by `xcode-select`.
+#
+# Set it when several Xcode versions are installed and xcode-select points to
+# an older one than the version that installed the simulator services. In that
+# case iOS E2E hangs with "The test runner hung before establishing
+# connection" / "failed to bless service hub".
+# E2E_XCODE = /Applications/Xcode.app

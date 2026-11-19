@@ -1,25 +1,32 @@
 # Common commands. Run `make` (or `make help`) to list them.
 # Everything goes through fvm so the pinned Flutter version is always used.
 
+# Per-machine settings (gitignored), see local.mk.example.
+-include local.mk
+
 FVM     ?= fvm
 FLUTTER := $(FVM) flutter
 DART    := $(FVM) dart
 MASON   := $(DART) pub global run mason_cli:mason
-PATROL  := PATROL_FLUTTER_COMMAND="$(FLUTTER)" $(DART) pub global run patrol_cli:main
 FLAVOR  ?= dev
 ENV_FILE = env/$(FLAVOR).json
 E2E_TARGET ?= patrol_test
+# Xcode app used for iOS E2E only (e.g. /Applications/Xcode.app); empty means
+# the one selected by xcode-select.
+E2E_XCODE ?=
+PATROL  := $(if $(E2E_XCODE),DEVELOPER_DIR="$(E2E_XCODE)/Contents/Developer",) \
+	PATROL_FLUTTER_COMMAND="$(FLUTTER)" $(DART) pub global run patrol_cli:main
 # Hand-written Dart files only; generated code keeps its generator's format.
 SRC_FILES = $(shell find lib test patrol_test -name '*.dart' \
 	! -path 'lib/i18n/gen/*' ! -name '*.g.dart' ! -name '*.freezed.dart' \
 	! -name 'test_bundle.dart')
 
 .DEFAULT_GOAL := help
-.PHONY: help setup gen watch run test e2e e2e-dev analyze format check \
+.PHONY: help setup gen watch run test e2e analyze format check \
 	feature shared clean
 
 help: ## Show available commands
-	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
+	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-9s\033[0m %s\n", $$1, $$2}'
 
 setup: ## First-time setup: Flutter, packages, mason bricks, generated code
@@ -44,11 +51,9 @@ run: ## Run the app: make run [FLAVOR=dev|stag|prod]
 test: ## Run unit, widget and architecture tests
 	$(FLUTTER) test
 
-e2e: ## E2E tests on a simulator/emulator: make e2e [DEVICE=<id|name>]
-	$(PATROL) test --target $(E2E_TARGET) $(if $(DEVICE),--device "$(DEVICE)",)
-
-e2e-dev: ## E2E with hot restart while writing a test: make e2e-dev E2E_TARGET=patrol_test/x_test.dart
-	$(PATROL) develop --target $(E2E_TARGET) $(if $(DEVICE),--device "$(DEVICE)",)
+e2e: ## E2E tests (all, or one file): make e2e [FILE=patrol_test/x_test.dart] [DEVICE=<id|name>]
+	$(PATROL) test --target $(or $(FILE),$(E2E_TARGET)) --no-uninstall --no-label \
+		$(if $(DEVICE),--device "$(DEVICE)",)
 
 analyze: ## Static analysis
 	$(FLUTTER) analyze

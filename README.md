@@ -29,8 +29,7 @@ Mở bằng VS Code: cài các extension được gợi ý, chọn cấu hình c
 | `make shared name=users entity=user` | Sinh một module nghiệp vụ dùng chung trong `lib/shared/` |
 | `make check` | Kiểm tra format, analyze, test, nên chạy trước khi commit |
 | `make test` / `make analyze` / `make format` | Chạy riêng từng bước |
-| `make e2e [DEVICE=<id>]` | Chạy toàn bộ E2E (Patrol) trên simulator/emulator đang mở |
-| `make e2e-dev E2E_TARGET=patrol_test/x_test.dart` | Chạy một file E2E có hot restart, dùng khi đang viết test |
+| `make e2e [FILE=patrol_test/x_test.dart] [DEVICE=<id>]` | Chạy toàn bộ E2E (Patrol), hoặc một file, trên simulator/emulator đang mở |
 
 Gõ `make` để xem toàn bộ danh sách. Không dùng `make` được (Windows) thì mở `Makefile`, mỗi lệnh chỉ là vài dòng `fvm flutter …` / `fvm dart …`.
 
@@ -227,17 +226,26 @@ Chạy app thật trên simulator/emulator và thao tác như người dùng, b�
 
 ```
 patrol_test/
-├── app_test.dart          # kịch bản: danh sách + phân trang, tìm kiếm, lỗi + thử lại, cài đặt
+├── posts_test.dart          # phân trang, lỗi trang đầu / tải thêm / kéo tải lại, danh sách rỗng, giữ state khi đổi tab
+├── search_test.dart         # kết quả, không có kết quả, mất mạng + quay lại
+├── notifications_test.dart  # đọc (badge giảm), xoá, xoá tất cả
+├── settings_test.dart       # dark mode + tiếng Việt, vẫn giữ sau khi mở lại app
 └── support/
-    ├── test_app.dart      # pumpTestApp(): khởi động app thật trên trạng thái sạch
-    └── fake_api.dart      # thay tầng mạng của Dio bằng dữ liệu cố định
+    ├── test_app.dart        # pumpTestApp() / restartTestApp(): khởi động app thật
+    └── fake_api.dart        # thay tầng mạng của Dio bằng dữ liệu cố định
 ```
 
 Cách hoạt động:
 
 - `pumpTestApp($)` gọi `createApp()` (giống `main()` nhưng không `runApp`), xoá shared preferences và token trước, rồi thay `HttpClientAdapter` của Dio bằng `FakeApi`. Ngoài tầng mạng, mọi thứ là code thật: retrofit, repository, usecase, Cubit/Bloc, UI, router.
-- `FakeApi` trả dữ liệu cố định, ghi lại các request đã gửi (`api.requests`, `api.pageRequests(2)`), và giả lập lỗi được (`failNextPostsRequests = 1`).
-- Test **tìm widget bằng key**. Key để trong file dùng chung giữa app và test: `<feature>/presentation/<feature>_keys.dart`, `app/router/shell_keys.dart`, `FailureView.retryButtonKey`. Phần tử trong danh sách dùng key có tham số, ví dụ `PostsKeys.postTile(id)`.
+- `restartTestApp($)` mô phỏng tắt rồi mở lại app: dựng lại mọi thứ trong bộ nhớ nhưng giữ dữ liệu đã lưu (cài đặt, token), dùng để test tính năng lưu lại.
+- `FakeApi` trả dữ liệu cố định (45 bài, cứ 10 bài có một bài tiêu đề "Flutter tips"), ghi lại các request đã gửi (`api.requests`, `api.pageRequests(2)`) và giả lập lỗi:
+  - `failNextPostsRequests = 1`: request `/posts` tiếp theo trả 503.
+  - `failPagesOnce.add(2)`: lần tải trang 2 tiếp theo trả 503.
+  - `searchOffline = true`: tìm kiếm báo lỗi mất mạng.
+  - `FakeApi(totalPosts: 0)`: danh sách rỗng.
+- Mỗi feature một file test; thêm feature mới thì thêm `patrol_test/<feature>_test.dart`.
+- Test **tìm widget bằng key**. Key để trong file dùng chung giữa app và test: `<feature>/presentation/<feature>_keys.dart`, `app/router/shell_keys.dart`, `FailureView.retryButtonKey`, `PagedListView.loadMoreRetryKey`. Phần tử trong danh sách dùng key có tham số, ví dụ `PostsKeys.postTile(id)`.
 
 Viết test mới:
 
@@ -256,7 +264,7 @@ Lưu ý khi chạy:
 
 - Cần `patrol_cli` (`make setup` đã cài) và một simulator/emulator đang mở. Kiểm tra môi trường bằng `fvm dart pub global run patrol_cli:main doctor`.
 - Cấu hình native đã có sẵn: Android (`MainActivityTest.java`, test orchestrator trong `android/app/build.gradle.kts`), iOS (target `RunnerUITests` link `FlutterGeneratedPluginSwiftPackage`, đã thêm vào cả 3 scheme).
-- **Máy có nhiều bản Xcode**: nếu E2E iOS treo với lỗi `unable to connect to "com.apple.instruments…"` / `failed to bless service hub`, nghĩa là `xcode-select` đang trỏ tới một bản Xcode cũ hơn bản đã cài dịch vụ simulator. Chọn bản mới nhất bằng `xcode-select`, hoặc chạy với `DEVELOPER_DIR=/Applications/<Xcode mới>.app/Contents/Developer make e2e`.
+- **Máy có nhiều bản Xcode**: nếu E2E iOS treo với lỗi `The test runner hung before establishing connection` / `failed to bless service hub`, nghĩa là `xcode-select` đang trỏ tới một bản Xcode cũ hơn bản đã cài dịch vụ simulator. Không muốn đổi `xcode-select` (vì dự án khác còn dùng) thì copy `local.mk.example` thành `local.mk` và đặt `E2E_XCODE = /Applications/<Xcode mới>.app`: chỉ `make e2e` dùng bản đó, mọi lệnh khác vẫn theo `xcode-select`. File `local.mk` là thiết lập riêng từng máy, không commit.
 
 ## Chạy app và flavor
 
